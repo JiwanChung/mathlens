@@ -259,7 +259,7 @@ strong { font-weight: 600; color: #363636; }
 .finding-number { position: absolute; top: 10px; right: 14px; font-size: 1.6rem; font-weight: 700; color: var(--accent); opacity: 0.12; }
 .finding-card h3 { font-size: 1.05rem; line-height: 1.4; margin-bottom: 8px; padding-right: 24px; color: #363636; }
 .finding-card p { font-size: 0.95rem; color: var(--text-muted); line-height: 1.55; }
-.abstract-details { max-width: 936px; margin: 8px auto 0; }
+.abstract-details { max-width: 936px; margin: 0 auto 2.5rem; }
 .abstract-details summary {
   cursor: pointer; text-align: center; color: var(--accent); font-size: 1rem; list-style: none;
 }

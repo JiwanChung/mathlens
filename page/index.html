@@ -64,6 +64,12 @@
 <!-- Findings overview -->
 <section class="overview-section">
   <div class="container">
+    <details class="abstract-details">
+      <summary>Abstract</summary>
+      <p class="abstract-lead">
+        Evaluation of multimodal reasoning models is typically reduced to a single accuracy score, implicitly treating reasoning as a unitary capability. We introduce <strong>MathLens</strong>, a benchmark of textbook-style geometry problems that exposes this assumption by operationally decomposing performance into perception, reasoning, and multimodal-specific components. Each problem is derived from a symbolic specification and accompanied by visual diagrams, text-only variants, multimodal questions, and targeted perceptual probes, enabling controlled measurement of each component. Using this decomposition, we show that common training strategies induce systematically different capability profiles that are invisible under aggregate accuracy. Reinforcement learning primarily improves perceptual grounding and robustness to diagram variation, while textual SFT yields gains through reflective reasoning. In contrast, as perception and reasoning improve, a growing fraction of remaining errors fall outside these components and are categorized as multimodal-specific. These results suggest that apparent progress in multimodal reasoning reflects shifting balances among subskills rather than uniform advancement, motivating evaluation beyond scalar accuracy.
+      </p>
+    </details>
     <h2 class="section-title">Findings</h2>
     <nav class="finding-grid" aria-label="Findings">
       <a class="finding-card" href="#finding-1">
@@ -92,12 +98,6 @@
         <p>Multimodal reasoning training preferentially improves skills driven by direct geometric cues, while perception tasks that rely on symbolic marks or long-range visual associations show limited gains.</p>
       </a>
     </nav>
-    <details class="abstract-details">
-      <summary>Abstract</summary>
-      <p class="abstract-lead">
-        Evaluation of multimodal reasoning models is typically reduced to a single accuracy score, implicitly treating reasoning as a unitary capability. We introduce <strong>MathLens</strong>, a benchmark of textbook-style geometry problems that exposes this assumption by operationally decomposing performance into perception, reasoning, and multimodal-specific components. Each problem is derived from a symbolic specification and accompanied by visual diagrams, text-only variants, multimodal questions, and targeted perceptual probes, enabling controlled measurement of each component. Using this decomposition, we show that common training strategies induce systematically different capability profiles that are invisible under aggregate accuracy. Reinforcement learning primarily improves perceptual grounding and robustness to diagram variation, while textual SFT yields gains through reflective reasoning. In contrast, as perception and reasoning improve, a growing fraction of remaining errors fall outside these components and are categorized as multimodal-specific. These results suggest that apparent progress in multimodal reasoning reflects shifting balances among subskills rather than uniform advancement, motivating evaluation beyond scalar accuracy.
-      </p>
-    </details>
   </div>
 </section>
 
