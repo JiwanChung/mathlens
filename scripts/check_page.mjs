@@ -161,7 +161,7 @@ const PAGE_CHECKS = `(async () => {
     const mod = b.dataset.mod;
     const qtext = q('[data-role=mods-question]').textContent;
     const labels = [...document.querySelectorAll('[data-role=mods-diagram] .plabel')].map((t) => t.textContent).join('');
-    let ok = q('[data-role=mods] .answer-box').textContent === '47';
+    let ok = q('[data-role=mods] .answer-value').textContent === '47';
     if (mod === 'rename') ok = ok && qtext === 'Find measure of angle RKP.' && labels === 'KQLPRNM';
     else ok = ok && qtext === 'Find measure of angle IAF.' && labels === 'AGBFIDC';
     if (mod === 'flip' || mod === 'rotate') ok = ok && ptA() !== origA;

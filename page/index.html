@@ -113,35 +113,38 @@
 
     <h3 class="subsection-title">Isolating components</h3>
     <div class="demo" data-role="tests">
-      <div class="demo-tabs" role="tablist" aria-label="Tests">
-        <button type="button" role="tab" class="demo-tab t-mm" data-test="mm">(1) Multimodal Reasoning Test</button>
-        <button type="button" role="tab" class="demo-tab t-perc" data-test="perc">(2) Perception Test</button>
-        <button type="button" role="tab" class="demo-tab t-reas" data-test="reas">(3) Reasoning Test</button>
+      <div class="seg demo-seg" role="tablist" aria-label="Tests">
+        <button type="button" role="tab" data-test="mm">(1) Multimodal Reasoning Test</button>
+        <button type="button" role="tab" data-test="perc">(2) Perception Test</button>
+        <button type="button" role="tab" data-test="reas">(3) Reasoning Test</button>
       </div>
       <div class="tests-body">
         <div class="tests-input">
           <div data-test-panel="mm perc">
             <div class="io-label">Diagram</div>
-            <svg class="dg dg-perc" data-role="tests-diagram" role="img" aria-label="Geometry diagram with points A, B, C, D, F, G, I and angles 47°, 112°, 65°"></svg>
+            <svg class="dg" data-role="tests-diagram" role="img" aria-label="Geometry diagram with points A, B, C, D, F, G, I and angles 47°, 112°, 65°"></svg>
           </div>
           <div data-test-panel="reas" hidden>
             <div class="io-label">Text description</div>
-            <div class="io-box io-reas">There are triangle BDF, triangle FIA, line BG, line CI. GBFI are collinear. AFD are collinear. AIC are collinear. ∠BDF=47°. ∠CIF=112°. ∠DFB=65°.</div>
+            <p class="tests-text">There are triangle BDF, triangle FIA, line BG, line CI. GBFI are collinear. AFD are collinear. AIC are collinear. ∠BDF=47°. ∠CIF=112°. ∠DFB=65°.</p>
           </div>
-          <div data-test-panel="mm reas">
+          <div class="tests-q" data-test-panel="mm reas">
             <div class="io-label">Question</div>
-            <div class="io-box">Find measure of angle IAF.</div>
+            <p class="tests-text">Find measure of angle IAF.</p>
           </div>
-          <div data-test-panel="perc" hidden>
+          <div class="tests-q" data-test-panel="perc" hidden>
             <div class="io-label">Perception probes</div>
             <button type="button" class="probe active" data-probe="ang-DFB" data-answer="A. DFB">Which angle has measure 65? A. DFB B. DBF</button>
             <button type="button" class="probe" data-probe="col-AFD" data-answer="B. AFD">Which is collinear? A. ABD B. AFD</button>
           </div>
         </div>
-        <div class="tests-model" aria-hidden="true"><span class="arrow">→</span><span class="mllm">MLLM</span><span class="arrow">→</span></div>
+        <div class="tests-model" aria-hidden="true">
+          <span class="mllm">MLLM</span>
+          <svg class="flow-arrow" viewBox="0 0 64 12"><path d="M1 6 H60 M53 1 L61 6 L53 11"/></svg>
+        </div>
         <div class="tests-output">
           <div class="io-label">Answer</div>
-          <div class="answer-box" data-role="tests-answer">47</div>
+          <div class="answer-value" data-role="tests-answer">47</div>
         </div>
       </div>
       <p class="demo-note" data-test-panel="perc" hidden>The Perception Test evaluates questions answerable directly from the diagram, such as reading an annotated angle.</p>
@@ -228,7 +231,7 @@
         <button type="button" data-mod="rename">Rename</button>
       </div>
       <svg class="dg dg-mods" data-role="mods-diagram" role="img" aria-label="The example diagram under the selected modification"></svg>
-      <div class="mods-qa"><span class="io-box" data-role="mods-question">Find measure of angle IAF.</span><span class="arrow">→</span><span class="answer-box small">47</span></div>
+      <div class="mods-qa"><span class="mods-q" data-role="mods-question">Find measure of angle IAF.</span><span class="arrow">→</span><span class="answer-value small">47</span></div>
       <p class="demo-note">To test visual robustness, we generate diagram variants by altering the semantic state, including adding auxiliary elements, applying flips or rotations, merging instances, and relabeling points, while preserving the ground-truth answer.</p>
     </div>
   </div>
