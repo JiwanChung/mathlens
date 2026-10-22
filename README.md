@@ -11,9 +11,10 @@ Jiwan Chung, Neel Joshi, Pratyusha Sharma, Youngjae Yu, Vibhav Vineet
 [Academic Project Page Template](https://github.com/eliahuhorwitz/Academic-project-page-template).
 `.github/workflows/deploy.yml` publishes `page/` to GitHub Pages on every push to `main`.
 
-- `page/index.html`: page content. Text and figures are from the paper. The layout follows the
-  deployed `rethinking-state-tracking` page.
-- `page/page.js`: math rendering (KaTeX), the Analysis finding cards, the examples carousel, and BibTeX copy.
+- `page/index.html`: page content. Five finding cards up top link to the paper's Findings 1–5,
+  each shown as a claim, one line of numbers, and its figure. Figures are from the paper; the
+  abstract is collapsed. The styles follow the deployed `rethinking-state-tracking` page.
+- `page/page.js`: the examples carousel and BibTeX copy.
 - `page/results.js`: the Results table, drawn from `page/static/data/results.json`.
 - `page/static/data/results.json`: the paper's appendix tables (downstream accuracy across diagram
   modifications, perception-probe accuracy by relation type, and the checkpoint behind each row).
@@ -22,9 +23,10 @@ Jiwan Chung, Neel Joshi, Pratyusha Sharma, Youngjae Yu, Vibhav Vineet
 - `page/static/figures/`: paper figures rendered from the paper PDFs by `scripts/render_figures.sh`
   (`pdftoppm`, 2400 px wide for main-body figures and 1440 px for appendix examples).
 - `scripts/check_page.mjs`: headless-Chrome check at 1280 px and 390 px. It fails on console errors,
-  HTTP errors, images that don't load, KaTeX errors, horizontal page overflow, Results-table cells
-  that don't match `results.json`, or finding cards / carousel slides that don't switch. It also
-  saves full-page screenshots.
+  HTTP errors, images that don't load, horizontal page overflow, Results-table cells that don't
+  match `results.json`, finding cards that don't link to their finding, a broken abstract toggle,
+  or carousel slides that don't switch. It reports the visible word count and saves full-page
+  screenshots.
 
 Preview and check locally:
 

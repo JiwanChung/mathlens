@@ -1,4 +1,4 @@
-/* Page chrome: math rendering, finding cards, examples carousel, BibTeX copy. */
+/* Page chrome: examples carousel and BibTeX copy. */
 (function () {
   'use strict';
 
@@ -6,32 +6,6 @@
     const el = root.querySelector(selector);
     if (!el) throw new Error('missing element: ' + selector);
     return el;
-  }
-
-  function renderMath() {
-    renderMathInElement(document.body, {
-      delimiters: [
-        { left: '\\[', right: '\\]', display: true },
-        { left: '\\(', right: '\\)', display: false },
-      ],
-      throwOnError: true,
-    });
-  }
-
-  function initFindings() {
-    const cards = [...document.querySelectorAll('.finding-card')];
-    const panels = [...document.querySelectorAll('.finding-detail-content')];
-    if (cards.length === 0 || cards.length !== panels.length) throw new Error('finding cards and panels do not match');
-    function select(idx) {
-      cards.forEach((c) => {
-        const on = c.dataset.finding === idx;
-        c.classList.toggle('active', on);
-        c.setAttribute('aria-pressed', String(on));
-      });
-      panels.forEach((p) => { p.hidden = p.dataset.finding !== idx; });
-    }
-    cards.forEach((card) => card.addEventListener('click', () => select(card.dataset.finding)));
-    select(cards[0].dataset.finding);
   }
 
   function initCarousel() {
@@ -68,8 +42,6 @@
   }
 
   function init() {
-    renderMath();
-    initFindings();
     initCarousel();
     initCopy();
   }

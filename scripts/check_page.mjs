@@ -1,8 +1,9 @@
 // Headless-Chrome check of the project page over the DevTools protocol.
 // Usage: node scripts/check_page.mjs <url> <screenshot-dir>
 // Fails (exit 1) on: console errors or uncaught exceptions, HTTP >= 400,
-// images that don't load, KaTeX errors, horizontal page overflow,
-// or a results table / finding card / carousel state that doesn't match the data.
+// images that don't load, horizontal page overflow, a results table that doesn't
+// match the data, a finding card that doesn't link to its finding, or a carousel
+// that doesn't cycle. Also reports the visible word count.
 import { spawn } from 'node:child_process';
 import { mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -67,8 +68,8 @@ const PAGE_CHECKS = `(async () => {
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   const imgs = [...document.querySelectorAll('img')];
   imgs.forEach((i) => { i.loading = 'eager'; });
-  // Hidden panels and slides never load lazily; unhide them briefly so their images load.
-  const hidden = [...document.querySelectorAll('.finding-detail-content, .carousel-slide')].filter((e) => e.hidden);
+  // Hidden slides never load lazily; unhide them briefly so their images load.
+  const hidden = [...document.querySelectorAll('.carousel-slide')].filter((e) => e.hidden);
   hidden.forEach((e) => { e.hidden = false; });
   await Promise.all(imgs.map((i) => i.complete ? null : new Promise((r) => { i.onload = r; i.onerror = r; })));
   const badImgs = imgs.filter((i) => !(i.complete && i.naturalWidth > 0)).map((i) => i.getAttribute('src'));
@@ -76,8 +77,12 @@ const PAGE_CHECKS = `(async () => {
 
   const report = {
     images: imgs.length, badImgs,
-    katex: document.querySelectorAll('.katex').length,
-    katexErrors: document.querySelectorAll('.katex-error').length,
+    // Prose words a reader sees without opening anything (tables and BibTeX excluded).
+    words: (() => {
+      const clone = document.body.cloneNode(true);
+      clone.querySelectorAll('table, pre, script, noscript, [hidden], details:not([open]) > :not(summary)').forEach((e) => e.remove());
+      return clone.textContent.split(/\\s+/).filter(Boolean).length;
+    })(),
     overflow: document.documentElement.scrollWidth - window.innerWidth,
     tables: [], findings: [], carousel: [],
   };
@@ -102,14 +107,15 @@ const PAGE_CHECKS = `(async () => {
   }
   document.querySelector('[data-role=metric] button').click();
 
-  // Finding cards: each shows exactly its own panel.
+  // Finding cards: each links to a finding article that has a title and a figure.
   for (const c of document.querySelectorAll('.finding-card')) {
-    c.click();
-    await sleep(10);
-    const visible = [...document.querySelectorAll('.finding-detail-content')].filter((p) => !p.hidden).map((p) => p.dataset.finding);
-    report.findings.push({ card: c.dataset.finding, ok: visible.length === 1 && visible[0] === c.dataset.finding && c.classList.contains('active') });
+    const href = c.getAttribute('href');
+    const target = href && href.startsWith('#') ? document.getElementById(href.slice(1)) : null;
+    report.findings.push({ card: href, ok: !!target && target.matches('article.finding') && !!target.querySelector('.finding-title') && target.querySelectorAll('img').length > 0 });
   }
-  document.querySelector('.finding-card').click();
+  // Abstract opens and closes.
+  const abs = document.querySelector('details.abstract-details');
+  report.abstractOk = !!abs && !abs.open && (abs.querySelector('summary').click(), abs.open) && (abs.querySelector('summary').click(), !abs.open);
 
   // Carousel: next walks through every slide once and wraps to the first.
   const slides = [...document.querySelectorAll('.carousel-slide')];
@@ -160,14 +166,13 @@ async function checkViewport(vp, failures) {
   const bad = [];
   if (problems.length) bad.push(...problems);
   if (report.badImgs.length) bad.push('images failed: ' + report.badImgs.join(', '));
-  if (report.katex === 0) bad.push('no KaTeX output');
-  if (report.katexErrors) bad.push(`${report.katexErrors} KaTeX errors`);
+  if (!report.abstractOk) bad.push('abstract toggle broken');
   if (report.overflow > 0 || report.overflowAfter > 0) bad.push(`horizontal overflow ${report.overflow}/${report.overflowAfter}px`);
   for (const t of report.tables) if (!(t.cellsOk && t.variantsOk && t.sizeHeads === 3) || t.overflow > 0) bad.push('table mismatch: ' + JSON.stringify(t));
   for (const f of report.findings) if (!f.ok) bad.push('finding card mismatch: ' + f.card);
   if (report.findings.length !== 5) bad.push(`expected 5 finding cards, got ${report.findings.length}`);
   if (report.carousel.length !== 7 || !report.carousel.every(Boolean)) bad.push('carousel mismatch: ' + JSON.stringify(report.carousel));
-  console.log(`[${vp.name}] images=${report.images} katex=${report.katex} tables=${report.tables.length} findings=${report.findings.length} slides=${report.carousel.length - 1} height=${Math.ceil(cssContentSize.height)} screenshot=${shotPath}`);
+  console.log(`[${vp.name}] images=${report.images} words=${report.words} tables=${report.tables.length} findings=${report.findings.length} slides=${report.carousel.length - 1} height=${Math.ceil(cssContentSize.height)} screenshot=${shotPath}`);
   bad.forEach((b) => console.log(`[${vp.name}] FAIL ${b}`));
   failures.push(...bad);
   cdp.close();

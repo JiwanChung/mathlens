@@ -6,10 +6,9 @@
   const DATA_URL = 'static/data/results.json';
   const SIZE_LABEL = { '7–9B open': '7–9B open-weight', '72B open': '72B open-weight', 'Closed': 'Closed-weight' };
   const CAPTIONS = {
-    downstream: 'Downstream accuracy across diagram modifications with output consistency under these conditions. ' +
-      'Text indicates performance from textual descriptions instead of diagrams, Raw denotes original human-generated diagrams, ' +
-      'Base the newly rendered diagrams, and the other cases semantic-space modifications followed by rendering. – : not evaluated.',
-    perception: 'Perception probe accuracy by question types.',
+    downstream: 'Accuracy (%) on text input, the original (Raw) and re-rendered (Base) diagrams, and six diagram modifications. ' +
+      'Consistency: agreement across diagram variants. –: not evaluated.',
+    perception: 'Perception-probe accuracy (%) by relation type.',
   };
   const DIAGRAM_COLUMNS = ['Raw', 'Base', 'Add lines', 'Add shapes', 'Flip', 'Merge', 'Rename', 'Rotate'];
 
