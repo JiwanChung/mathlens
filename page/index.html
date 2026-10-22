@@ -79,7 +79,7 @@
       <a class="finding-card" href="#finding-3">
         <div class="finding-number">3</div>
         <h3>Multimodal-specific errors increase as perception and reasoning improve</h3>
-        <p>For Revisual-R1 and OVR, their share rises from 9% to 15–17% of answers.</p>
+        <p>Remaining errors are increasingly cases where perception and reasoning succeed separately but the full problem fails.</p>
       </a>
       <a class="finding-card" href="#finding-4">
         <div class="finding-number">4</div>
@@ -89,7 +89,7 @@
       <a class="finding-card" href="#finding-5">
         <div class="finding-number">5</div>
         <h3>Perception gains are uneven</h3>
-        <p>Collinear relations improve in all six models, while length relations show no consistent improvement.</p>
+        <p>Collinear relations improve in every model, while length relations show no consistent improvement.</p>
       </a>
     </nav>
     <details class="abstract-details">
@@ -134,7 +134,7 @@
     <article class="finding" id="finding-1">
       <p class="finding-label">Finding 1</p>
       <h3 class="finding-title">Multimodal RL gains vary with textual reasoning strength</h3>
-      <p class="finding-text">Textual SFT mainly improves accuracy on text input (+23.4 and +27.3 points for Revisual-R1 and OVR, compared with +7.9 and +7.7 on diagram input). Multimodal RL applied afterwards improves accuracy on diagram input by +4.7 and +4.2 points. Direct multimodal RL, without textual SFT, yields modest gains on both inputs (+2.3 to +4.2 points).</p>
+      <p class="finding-text">Textual SFT mainly improves accuracy on text input. Multimodal RL applied afterwards improves accuracy on diagram input, while direct multimodal RL, without textual SFT, yields modest gains on both inputs.</p>
       <div class="figure-block">
         <a href="static/figures/new_v2_visual_vs_text-main.png" target="_blank" rel="noopener"><img src="static/figures/new_v2_visual_vs_text-main.png" alt="Accuracy change with 95% confidence intervals for visual and textual input, for direct RL, multimodal SFT then RL, and textual SFT then RL" class="figure-img figure-img-half" loading="lazy" width="2400" height="2150"></a>
         <p class="figure-caption">Percentage-point shifts from finetuning on text versus diagram input, with 95% confidence intervals. Lighter bars are not significant.</p>
@@ -144,7 +144,7 @@
     <article class="finding" id="finding-2">
       <p class="finding-label">Finding 2</p>
       <h3 class="finding-title">Perception improves after textual SFT, which uses no visual input</h3>
-      <p class="finding-text">Although textual SFT uses no images, perception-probe accuracy increases by 3.2 and 5.9 points for Revisual-R1 and OVR. All six models also improve on perception probes after multimodal RL, whereas both multimodal SFT models decline (−5.5 and −1.6 points). In Revisual-R1 and OVR, reflection is more frequent in probe answers that become correct after training than in answers that were already correct.</p>
+      <p class="finding-text">Although textual SFT uses no images, perception-probe accuracy increases after it. Perception also improves after multimodal RL in every model, whereas it declines after multimodal SFT. In the two textual SFT models, reflection is more frequent in probe answers that become correct after training than in answers that were already correct.</p>
       <div class="figure-pair">
         <div class="figure-block">
           <a href="static/figures/new_v4_perception-main.png" target="_blank" rel="noopener"><img src="static/figures/new_v4_perception-main.png" alt="Perception-probe accuracy change with 95% confidence intervals for each training stage" class="figure-img" loading="lazy" width="2400" height="2268"></a>
@@ -160,7 +160,7 @@
     <article class="finding" id="finding-3">
       <p class="finding-label">Finding 3</p>
       <h3 class="finding-title">Multimodal-specific errors increase as perception and reasoning improve</h3>
-      <p class="finding-text">In the 7B models, most of the reduction in errors comes from problems on which a model fails both the perception and the reasoning test; for Revisual-R1 and OVR, these fall from 25% to 7% of answers. Over the same training, multimodal-specific errors, where both tests succeed but the full problem fails, rise from 9% to 15% and 17%.</p>
+      <p class="finding-text">In the 7B models, most of the reduction in errors comes from problems on which a model fails both the perception and the reasoning test. Over the same training, the share of multimodal-specific errors, where both tests succeed but the full problem fails, increases, most clearly in the models trained with textual SFT.</p>
       <div class="figure-block">
         <a href="static/figures/v5_breakdown-main.png" target="_blank" rel="noopener"><img src="static/figures/v5_breakdown-main.png" alt="Stacked bars of error types per model and training stage" class="figure-img figure-img-medium" loading="lazy" width="2400" height="2534"></a>
         <p class="figure-caption">Distribution of error types per model. “Interaction” denotes the multimodal-specific category.</p>
@@ -170,7 +170,7 @@
     <article class="finding" id="finding-4">
       <p class="finding-label">Finding 4</p>
       <h3 class="finding-title">Consistency under diagram modifications increases after multimodal RL</h3>
-      <p class="finding-text">We measure consistency as the agreement of a model's answers across modified versions of the same diagram. Consistency increases after multimodal RL in all six models (e.g., from 21.1% to 39.4% for Vision-R1) and decreases after multimodal SFT (from 31.0% to 24.0% and 21.1%). The multimodal SFT models also lose accuracy on newly rendered diagrams (−3.3 and −6.4 points) while remaining stable on curated ones.</p>
+      <p class="finding-text">We measure consistency as the agreement of a model's answers across modified versions of the same diagram. Consistency increases after multimodal RL in every model and decreases after multimodal SFT. The multimodal SFT models also lose accuracy on newly rendered diagrams while remaining stable on curated ones.</p>
       <div class="figure-block">
         <a href="static/figures/v8_visual_robustness-main.png" target="_blank" rel="noopener"><img src="static/figures/v8_visual_robustness-main.png" alt="Box plots of accuracy on modified diagrams with base accuracy and consistency rate markers" class="figure-img" loading="lazy" width="2400" height="674"></a>
         <p class="figure-caption">Accuracy on modified diagrams (boxes) and on the unmodified base diagrams (○), and consistency (◇).</p>
@@ -184,7 +184,7 @@
     <article class="finding" id="finding-5">
       <p class="finding-label">Finding 5</p>
       <h3 class="finding-title">Perception gains are uneven</h3>
-      <p class="finding-text">Collinear relations improve in all six models, and parallel and cocircular relations in five. Angle and polygon relations improve most in Revisual-R1 and OVR, the two models trained with textual SFT followed by multimodal RL, whereas length relations show no consistent improvement.</p>
+      <p class="finding-text">Collinear relations improve in every model, and parallel and cocircular relations in most. Angle and polygon relations improve most in the models trained with textual SFT followed by multimodal RL, whereas length relations show no consistent improvement.</p>
       <div class="figure-block">
         <a href="static/figures/v6_perception_radar-main.png" target="_blank" rel="noopener"><img src="static/figures/v6_perception_radar-main.png" alt="Radar charts of perception-probe accuracy over ten relation types for six 7B model families" class="figure-img" loading="lazy" width="2400" height="1442"></a>
         <p class="figure-caption">Perception-probe accuracy by relation type for each model before and after finetuning.</p>
