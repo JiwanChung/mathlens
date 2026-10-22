@@ -7,7 +7,7 @@
   const SIZE_LABEL = { '7–9B open': '7–9B open-weight', '72B open': '72B open-weight', 'Closed': 'Closed-weight' };
   const CAPTIONS = {
     downstream: 'Accuracy (%) on text input, the original (Raw) and re-rendered (Base) diagrams, and six diagram modifications. ' +
-      'Consistency: agreement across diagram variants. –: not evaluated.',
+      'Consistency: how often answers agree across modified versions of a diagram. –: not evaluated.',
     perception: 'Perception-probe accuracy (%) by relation type.',
   };
   const DIAGRAM_COLUMNS = ['Raw', 'Base', 'Add lines', 'Add shapes', 'Flip', 'Merge', 'Rename', 'Rotate'];
@@ -34,7 +34,7 @@
         throw new Error('unexpected downstream columns: ' + columns.join(', '));
       }
       const r1 = document.createElement('tr');
-      r1.append(cell('th', 'Model', '', { rowspan: 2 }), cell('th', 'Variant', '', { rowspan: 2 }),
+      r1.append(cell('th', 'Model', '', { rowspan: 2 }), cell('th', 'Training', '', { rowspan: 2 }),
         cell('th', 'Text', '', { rowspan: 2 }), cell('th', 'Diagram', 'sep', { colspan: DIAGRAM_COLUMNS.length }),
         cell('th', 'Consistency', 'sep', { rowspan: 2 }));
       const r2 = document.createElement('tr');
@@ -42,7 +42,7 @@
       thead.append(r1, r2);
     } else {
       const r = document.createElement('tr');
-      r.append(cell('th', 'Model'), cell('th', 'Variant'));
+      r.append(cell('th', 'Model'), cell('th', 'Training'));
       columns.forEach((c) => r.appendChild(cell('th', c)));
       thead.appendChild(r);
     }

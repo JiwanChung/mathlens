@@ -178,9 +178,8 @@ strong { font-weight: 600; color: #363636; }
 /* ── Analysis ── */
 .results-section { padding: 3rem 1.5rem; background: var(--bg); }
 .section-lead { max-width: 760px; margin: 0 auto 1.25rem; text-align: center; font-size: 1.1rem; }
-.leaderboard.recipes { width: auto; margin: 0 auto; }
-.leaderboard.recipes td { text-align: left; }
 .finding { margin: 4rem 0 0; scroll-margin-top: 16px; }
+.finding:first-of-type { margin-top: 1rem; }
 .finding-label {
   text-align: center; font-size: 0.95rem; font-weight: 600; color: var(--accent);
   font-family: 'Google Sans', 'Noto Sans', sans-serif;
