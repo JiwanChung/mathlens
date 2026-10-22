@@ -1,4 +1,4 @@
-/* Page chrome: examples carousel and BibTeX copy. */
+/* Page chrome: section navigation, examples carousel, and BibTeX copy. */
 (function () {
   'use strict';
 
@@ -6,6 +6,28 @@
     const el = root.querySelector(selector);
     if (!el) throw new Error('missing element: ' + selector);
     return el;
+  }
+
+  // Highlights the nav link of the section currently at the top of the viewport.
+  function initNav() {
+    const links = [...document.querySelectorAll('[data-nav]')];
+    if (links.length === 0) throw new Error('no navigation links');
+    const sections = links.map((l) => {
+      const target = document.getElementById(l.getAttribute('href').slice(1));
+      if (!target) throw new Error('nav target missing: ' + l.getAttribute('href'));
+      return target;
+    });
+    function update() {
+      const y = window.scrollY + 80;
+      let current = -1;
+      sections.forEach((sec, i) => { if (sec.offsetTop <= y) current = i; });
+      // The last section is too short to reach the top; at the bottom of the page it is the current one.
+      if (window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 2) current = sections.length - 1;
+      links.forEach((l, i) => l.classList.toggle('active', i === current));
+    }
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    update();
   }
 
   function initCarousel() {
@@ -42,6 +64,7 @@
   }
 
   function init() {
+    initNav();
     initCarousel();
     initCopy();
   }

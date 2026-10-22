@@ -14,7 +14,7 @@ Jiwan Chung, Neel Joshi, Pratyusha Sharma, Youngjae Yu, Vibhav Vineet
 - `page/index.html`: page content. Five finding cards up top link to the paper's Findings 1–5,
   each shown as a claim, one line of numbers, and its figure. Figures are from the paper; the
   abstract is collapsed. The styles follow the deployed `rethinking-state-tracking` page.
-- `page/page.js`: the examples carousel and BibTeX copy.
+- `page/page.js`: the sticky section navigation, the examples carousel, and BibTeX copy.
 - `page/mathlens.js`: the interactive MathLens section, built on the paper's running example
   (Figs. 2 and 3). It covers the three tests with their outcomes and the resulting error type, the semantic state → artifact
   mapping, and diagram modifications. The diagram is an SVG traced from Fig. 3(e). Modified

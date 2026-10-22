@@ -237,29 +237,26 @@ strong { font-weight: 600; color: #363636; }
   margin: 0 auto;
 }
 
-/* ── Findings overview ── */
-.overview-section { padding: 2rem 1.5rem 3rem; background: var(--bg); }
+/* ── Navigation ── */
+.site-nav {
+  position: sticky; top: 0; z-index: 20;
+  background: rgba(255, 255, 255, 0.96); border-bottom: 1px solid var(--border);
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+}
+.site-nav-links { display: flex; justify-content: center; gap: 32px; padding: 0 16px; overflow-x: auto; }
+.site-nav a {
+  padding: 12px 2px 10px; border-bottom: 2px solid transparent; white-space: nowrap;
+  font: 1rem 'Google Sans', 'Noto Sans', sans-serif; color: var(--text);
+}
+.site-nav a:hover { color: #363636; text-decoration: none; }
+.site-nav a.active { color: #363636; border-bottom-color: var(--accent); }
+section[id] { scroll-margin-top: 48px; }
+
 .teaser-tldr {
   margin: 16px 0 0; font-size: 1.2rem; line-height: 1.6;
   font-family: 'Google Sans', 'Noto Sans', sans-serif; color: #363636; text-align: center;
 }
-.finding-grid {
-  display: flex; flex-wrap: wrap; justify-content: center;
-  gap: 16px; margin-bottom: 20px;
-}
-.finding-card {
-  background: var(--bg); border: 2px solid var(--border);
-  border-radius: 4px; padding: 20px; position: relative;
-  flex: 0 1 calc((100% - 32px) / 3);
-  transition: border-color 0.15s; color: inherit;
-  display: flex; flex-direction: column; justify-content: flex-start;
-}
-.finding-card:hover { border-color: var(--accent); text-decoration: none; }
-.finding-card:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.finding-number { position: absolute; top: 10px; right: 14px; font-size: 1.6rem; font-weight: 700; color: var(--accent); opacity: 0.12; }
-.finding-card h3 { font-size: 1.05rem; line-height: 1.4; margin-bottom: 8px; padding-right: 24px; color: #363636; }
-.finding-card p { font-size: 0.95rem; color: var(--text-muted); line-height: 1.55; }
-.abstract-details { max-width: 936px; margin: 0 auto 2.5rem; }
+.abstract-details { margin: 8px 0 2.5rem; }
 .abstract-details summary {
   cursor: pointer; text-align: center; color: var(--accent); font-size: 1rem; list-style: none;
 }
@@ -279,8 +276,12 @@ strong { font-weight: 600; color: #363636; }
 .method-text { font-size: 1.1rem; line-height: 1.7; margin: 0 0 0.9rem; }
 .pred { font-variant: small-caps; }
 .nowrap { white-space: nowrap; }
-.finding { margin: 4rem 0 0; scroll-margin-top: 16px; }
-.finding:first-of-type { margin-top: 1rem; }
+.finding-index { list-style: none; margin: 0 auto 1rem; padding: 0; border-top: 1px solid var(--border); }
+.finding-index li { border-bottom: 1px solid var(--border); }
+.finding-index a { display: flex; align-items: baseline; gap: 14px; padding: 11px 4px; color: #363636; font-size: 1.05rem; }
+.finding-index a:hover { background: var(--bg-alt); text-decoration: none; }
+.fi-num { flex: none; width: 24px; font-weight: 600; color: var(--accent); }
+.finding { margin: 4rem 0 0; scroll-margin-top: 64px; }
 .finding-label {
   font-size: 0.95rem; font-weight: 600; color: var(--accent);
   font-family: 'Google Sans', 'Noto Sans', sans-serif;
@@ -340,7 +341,7 @@ footer { padding: 24px; text-align: center; font-size: 0.85rem; color: var(--tex
 /* ── Responsive ── */
 @media (max-width: 768px) {
   .container { padding: 0 16px; }
-  .overview-section, .benchmark-section, .results-section,
+  .benchmark-section, .results-section,
   .leaderboard-section, .examples-section, .bibtex-section { padding-left: 0; padding-right: 0; }
   .hero .container { padding: 2rem 16px; }
   .hero .title.paper-title { font-size: 1.55rem; }
@@ -353,7 +354,8 @@ footer { padding: 24px; text-align: center; font-size: 0.85rem; color: var(--tex
   .subsection-title { font-size: 1.15rem; }
   .finding-title { font-size: 1.2rem; }
   .finding-subtitle { font-size: 1.05rem; }
-  .finding-card { flex-basis: 100%; }
+  .site-nav-links { gap: 15px; padding: 0 8px; }
+  .site-nav a { font-size: 0.92rem; }
   .decomp-grid, .gen-wrap, .diag { grid-template-columns: 1fr; }
   .dg .plabel { font-size: 28px; }
   .dg .alabel { font-size: 26px; }

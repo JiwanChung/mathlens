@@ -49,6 +49,17 @@
   </div>
 </section>
 
+<!-- Navigation -->
+<nav class="site-nav" aria-label="Sections">
+  <div class="site-nav-links">
+    <a href="#mathlens" data-nav>MathLens</a>
+    <a href="#findings" data-nav>Findings</a>
+    <a href="#results" data-nav>Results</a>
+    <a href="#examples" data-nav>Examples</a>
+    <a href="#bibtex" data-nav>BibTeX</a>
+  </div>
+</nav>
+
 <!-- Teaser -->
 <section class="teaser">
   <div class="container bit-narrow">
@@ -58,50 +69,14 @@
         MathLens decomposes multimodal reasoning errors into perception, reasoning, and a residual multimodal-specific category, revealing component-specific shifts after finetuning that are hidden by aggregate accuracy.
       </p>
     </div>
-  </div>
-</section>
-
-<!-- Findings overview -->
-<section class="overview-section">
-  <div class="container">
     <details class="abstract-details">
       <summary>Abstract</summary>
       <p class="abstract-lead">
         Evaluation of multimodal reasoning models is typically reduced to a single accuracy score, implicitly treating reasoning as a unitary capability. We introduce <strong>MathLens</strong>, a benchmark of textbook-style geometry problems that exposes this assumption by operationally decomposing performance into perception, reasoning, and multimodal-specific components. Each problem is derived from a symbolic specification and accompanied by visual diagrams, text-only variants, multimodal questions, and targeted perceptual probes, enabling controlled measurement of each component. Using this decomposition, we show that common training strategies induce systematically different capability profiles that are invisible under aggregate accuracy. Reinforcement learning primarily improves perceptual grounding and robustness to diagram variation, while textual SFT yields gains through reflective reasoning. In contrast, as perception and reasoning improve, a growing fraction of remaining errors fall outside these components and are categorized as multimodal-specific. These results suggest that apparent progress in multimodal reasoning reflects shifting balances among subskills rather than uniform advancement, motivating evaluation beyond scalar accuracy.
       </p>
     </details>
-    <h2 class="section-title">Findings</h2>
-    <nav class="finding-grid" aria-label="Findings">
-      <a class="finding-card" href="#finding-1">
-        <div class="finding-number">1</div>
-        <h3>Multimodal RL impact varies with textual reasoning strength</h3>
-        <p>With strong textual SFT it mainly boosts perception; without it, it modestly improves both modalities.</p>
-      </a>
-      <a class="finding-card" href="#finding-2">
-        <div class="finding-number">2</div>
-        <h3>Textual SFT improves perception partially through reflective reasoning</h3>
-        <p>Textual SFT does not use visual inputs, yet it enhances perceptual performance.</p>
-      </a>
-      <a class="finding-card" href="#finding-3">
-        <div class="finding-number">3</div>
-        <h3>RL improves perception and reasoning in a correlated manner</h3>
-        <p>It causes residual errors to be increasingly categorized as multimodal-specific once the other components improve.</p>
-      </a>
-      <a class="finding-card" href="#finding-4">
-        <div class="finding-number">4</div>
-        <h3>Multimodal RL improves visual consistency under structural variations</h3>
-        <p>Multimodal SFT lowers consistency.</p>
-      </a>
-      <a class="finding-card" href="#finding-5">
-        <div class="finding-number">5</div>
-        <h3>Perception gains are uneven</h3>
-        <p>Multimodal reasoning training preferentially improves skills driven by direct geometric cues, while perception tasks that rely on symbolic marks or long-range visual associations show limited gains.</p>
-      </a>
-    </nav>
   </div>
 </section>
-
-<hr class="section-divider">
 
 <!-- MathLens -->
 <section class="benchmark-section" id="mathlens">
@@ -238,10 +213,17 @@
 
 <hr class="section-divider">
 
-<!-- Analysis -->
-<section class="results-section" id="analysis">
+<!-- Findings -->
+<section class="results-section" id="findings">
   <div class="container bit-narrow">
-    <h2 class="section-title">Analysis</h2>
+    <h2 class="section-title">Findings</h2>
+    <ol class="finding-index">
+      <li><a href="#finding-1"><span class="fi-num">1</span><span>Multimodal RL impact varies with textual reasoning strength</span></a></li>
+      <li><a href="#finding-2"><span class="fi-num">2</span><span>Textual SFT improves perception partially through reflective reasoning</span></a></li>
+      <li><a href="#finding-3"><span class="fi-num">3</span><span>RL improves perception and reasoning in a correlated manner</span></a></li>
+      <li><a href="#finding-4"><span class="fi-num">4</span><span>Multimodal RL improves visual consistency under structural variations</span></a></li>
+      <li><a href="#finding-5"><span class="fi-num">5</span><span>Perception gains are uneven</span></a></li>
+    </ol>
     <article class="finding" id="finding-1">
       <p class="finding-label">Finding 1</p>
       <h3 class="finding-title">Multimodal RL impact varies with textual reasoning strength</h3>

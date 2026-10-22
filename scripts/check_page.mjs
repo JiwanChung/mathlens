@@ -2,7 +2,7 @@
 // Usage: node scripts/check_page.mjs <url> <screenshot-dir>
 // Fails (exit 1) on: console errors or uncaught exceptions, HTTP >= 400,
 // images that don't load, horizontal page overflow, a results table that doesn't
-// match the data, a finding card that doesn't link to its finding, a MathLens demo
+// match the data, a findings-index entry or nav link that doesn't reach its target, a MathLens demo
 // state that doesn't match the paper's example, or a carousel that doesn't cycle.
 // Also reports the visible word count.
 import { spawn } from 'node:child_process';
@@ -110,12 +110,23 @@ const PAGE_CHECKS = `(async () => {
   }
   document.querySelector('[data-role=metric] button').click();
 
-  // Finding cards: each links to a finding article that has a title and a figure.
-  for (const c of document.querySelectorAll('.finding-card')) {
-    const href = c.getAttribute('href');
+  // Findings index: each entry links to a finding article with the same title and a figure.
+  for (const a of document.querySelectorAll('.finding-index a')) {
+    const href = a.getAttribute('href');
     const target = href && href.startsWith('#') ? document.getElementById(href.slice(1)) : null;
-    report.findings.push({ card: href, ok: !!target && target.matches('article.finding') && !!target.querySelector('.finding-title') && target.querySelectorAll('img').length > 0 });
+    const title = target && target.querySelector('.finding-title');
+    report.findings.push({ card: href, ok: !!target && target.matches('article.finding') && !!title
+      && a.textContent.includes(title.textContent) && target.querySelectorAll('img').length > 0 });
   }
+  // Navigation: every link has a target, and scrolling to it marks that link active.
+  report.nav = [];
+  for (const a of document.querySelectorAll('[data-nav]')) {
+    const target = document.getElementById(a.getAttribute('href').slice(1));
+    if (target) { window.scrollTo(0, target.offsetTop); await sleep(60); }
+    report.nav.push({ href: a.getAttribute('href'), ok: !!target && a.classList.contains('active')
+      && document.querySelectorAll('[data-nav].active').length === 1 });
+  }
+  window.scrollTo(0, 0);
   // Abstract opens and closes.
   const abs = document.querySelector('details.abstract-details');
   report.abstractOk = !!abs && !abs.open && (abs.querySelector('summary').click(), abs.open) && (abs.querySelector('summary').click(), !abs.open);
@@ -226,8 +237,10 @@ async function checkViewport(port, vp, failures) {
   if (!report.abstractOk) bad.push('abstract toggle broken');
   if (report.overflow > 0 || report.overflowAfter > 0) bad.push(`horizontal overflow ${report.overflow}/${report.overflowAfter}px`);
   for (const t of report.tables) if (!(t.cellsOk && t.variantsOk) || t.overflow > 0) bad.push('table mismatch: ' + JSON.stringify(t));
-  for (const f of report.findings) if (!f.ok) bad.push('finding card mismatch: ' + f.card);
-  if (report.findings.length !== 5) bad.push(`expected 5 finding cards, got ${report.findings.length}`);
+  for (const f of report.findings) if (!f.ok) bad.push('finding index mismatch: ' + f.card);
+  if (report.findings.length !== 5) bad.push(`expected 5 findings, got ${report.findings.length}`);
+  for (const n of report.nav) if (!n.ok) bad.push('nav mismatch: ' + n.href);
+  if (report.nav.length !== 5) bad.push(`expected 5 nav links, got ${report.nav.length}`);
   if (report.carousel.length !== 7 || !report.carousel.every(Boolean)) bad.push('carousel mismatch: ' + JSON.stringify(report.carousel));
   const badDemos = report.demos.filter(([, ok]) => !ok).map(([name]) => name);
   if (badDemos.length) bad.push('demo mismatch: ' + badDemos.join(', '));
