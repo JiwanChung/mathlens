@@ -55,7 +55,7 @@
     <div class="figure-block">
       <a href="static/figures/fixed_fig1.png" target="_blank" rel="noopener"><img src="static/figures/fixed_fig1.png" alt="Downstream error rate of a backbone MLLM and of models after direct RL, multimodal SFT, multimodal SFT plus RL, textual SFT, and textual SFT plus RL, decomposed into reasoning, joint, perception, and integration error rates" class="figure-img" width="2400" height="631"></a>
       <p class="teaser-tldr">
-        MathLens decomposes multimodal reasoning errors into perception, reasoning, and a residual multimodal-specific category (“Integration”), revealing component-specific shifts after finetuning that are hidden by aggregate accuracy.
+        MathLens decomposes multimodal reasoning errors into perception, reasoning, and a residual multimodal-specific category, revealing component-specific shifts after finetuning that are hidden by aggregate accuracy.
       </p>
     </div>
   </div>
@@ -68,28 +68,28 @@
     <nav class="finding-grid" aria-label="Findings">
       <a class="finding-card" href="#finding-1">
         <div class="finding-number">1</div>
-        <h3>Multimodal RL gains vary with textual reasoning strength</h3>
-        <p>Textual SFT mainly improves accuracy on text input; multimodal RL applied afterwards improves accuracy on diagrams.</p>
+        <h3>Multimodal RL impact varies with textual reasoning strength</h3>
+        <p>With strong textual SFT it mainly boosts perception; without it, it modestly improves both modalities.</p>
       </a>
       <a class="finding-card" href="#finding-2">
         <div class="finding-number">2</div>
-        <h3>Perception improves after textual SFT</h3>
-        <p>Perception-probe accuracy increases even though textual SFT uses no visual input.</p>
+        <h3>Textual SFT improves perception</h3>
+        <p>Textual SFT does not use visual inputs, yet it enhances perceptual performance.</p>
       </a>
       <a class="finding-card" href="#finding-3">
         <div class="finding-number">3</div>
-        <h3>Multimodal-specific errors increase as perception and reasoning improve</h3>
-        <p>Remaining errors are increasingly cases where perception and reasoning succeed separately but the full problem fails.</p>
+        <h3>RL improves perception and reasoning in a correlated manner</h3>
+        <p>Residual errors are increasingly categorized as multimodal-specific once the other components improve.</p>
       </a>
       <a class="finding-card" href="#finding-4">
         <div class="finding-number">4</div>
-        <h3>Consistency under diagram modifications increases after multimodal RL</h3>
-        <p>After multimodal SFT, consistency decreases.</p>
+        <h3>Multimodal RL improves visual consistency under structural variations</h3>
+        <p>Multimodal SFT lowers consistency.</p>
       </a>
       <a class="finding-card" href="#finding-5">
         <div class="finding-number">5</div>
         <h3>Perception gains are uneven</h3>
-        <p>Collinear relations improve in every model, while length relations show no consistent improvement.</p>
+        <p>Multimodal reasoning training preferentially improves skills driven by direct geometric cues, while perception tasks that rely on symbolic marks or long-range visual associations show limited gains.</p>
       </a>
     </nav>
     <details class="abstract-details">
@@ -108,18 +108,18 @@
   <div class="container bit-narrow">
     <h2 class="section-title">MathLens</h2>
     <p class="section-lead">
-      Most multimodal reasoning benchmarks report only aggregate accuracy, which hides whether errors come from perception, reasoning, or their interaction. MathLens is designed to probe these components separately.
+      Most multimodal reasoning benchmarks report only aggregate accuracy, obscuring whether errors stem from perception (extracting information from inputs), reasoning (operating on extracted information), or their interaction. MathLens is designed to separately probe these components while preserving realistic problem contexts.
     </p>
     <div class="figure-block">
       <a href="static/figures/mathlens_main2.png" target="_blank" rel="noopener"><img src="static/figures/mathlens_main2.png" alt="A geometry problem tested four ways: the multimodal reasoning test, a perception test with two-option probes, a reasoning test with a complete text description in place of the diagram, and the integration case where perception and reasoning succeed but multimodal reasoning fails" class="figure-img" loading="lazy" width="2400" height="704"></a>
       <p class="figure-caption">
-        The multimodal reasoning test (1) is decomposed into a perception test (2), questions answerable directly from the diagram, and a reasoning test (3), where a complete text description replaces the diagram. The multimodal-specific category (4) covers failures on (1) when (2) and (3) succeed.
+        Based on MathLens annotations, the joint <em>Multimodal Reasoning Test</em> (1) is decomposed into a Perception Test and a textual Reasoning Test. The <em>Perception Test</em> evaluates questions answerable directly from the diagram, such as reading an annotated angle (e.g., ∠DFB in (2)). The <em>Reasoning Test</em> (3) replaces the diagram with a complete textual description, such that the question can be solved without visual access. Finally, the <em>Multimodal-specific</em> category (4) highlights cases where multimodal reasoning fails even though perception and reasoning, when tested independently, succeed.
       </p>
     </div>
     <div class="figure-block">
       <a href="static/figures/fixed_fig3.png" target="_blank" rel="noopener"><img src="static/figures/fixed_fig3.png" alt="Semantic state as predicates, the question, the text description, perception probes, and the diagram rendered from the predicates next to the existing diagram" class="figure-img" loading="lazy" width="2400" height="825"></a>
       <p class="figure-caption">
-        From a semantic state representation, MathLens builds text descriptions, perception probes, and questions with no overlap with the visual content. New diagrams are rendered from the semantic state to avoid visual familiarity effects.
+        <strong>Sample data generation process in MathLens.</strong> From a <em>semantic state</em> representation, we build controlled <em>text descriptions</em>, <em>perception probes</em>, and <em>questions</em> with no overlap with visual content. Also, new <em>diagrams</em> are rendered from the semantic state to avoid visual familiarity effects.
       </p>
     </div>
   </div>
@@ -133,61 +133,61 @@
     <h2 class="section-title">Analysis</h2>
     <article class="finding" id="finding-1">
       <p class="finding-label">Finding 1</p>
-      <h3 class="finding-title">Multimodal RL gains vary with textual reasoning strength</h3>
-      <p class="finding-text">Textual SFT mainly improves accuracy on text input. Multimodal RL applied afterwards improves accuracy on diagram input, while direct multimodal RL, without textual SFT, yields modest gains on both inputs.</p>
+      <h3 class="finding-title">Multimodal RL impact varies with textual reasoning strength</h3>
+      <p class="finding-text">With strong textual SFT, multimodal RL mainly boosts perception; without it, multimodal RL modestly improves both modalities.</p>
       <div class="figure-block">
         <a href="static/figures/new_v2_visual_vs_text-main.png" target="_blank" rel="noopener"><img src="static/figures/new_v2_visual_vs_text-main.png" alt="Accuracy change with 95% confidence intervals for visual and textual input, for direct RL, multimodal SFT then RL, and textual SFT then RL" class="figure-img figure-img-half" loading="lazy" width="2400" height="2150"></a>
-        <p class="figure-caption">Percentage-point shifts from finetuning on text versus diagram input, with 95% confidence intervals. Lighter bars are not significant.</p>
+        <p class="figure-caption"><strong>Performance gains by input modality.</strong> Bars show percentage point shifts from finetuning for text versus diagram inputs.</p>
       </div>
     </article>
 
     <article class="finding" id="finding-2">
       <p class="finding-label">Finding 2</p>
-      <h3 class="finding-title">Perception improves after textual SFT, which uses no visual input</h3>
-      <p class="finding-text">Although textual SFT uses no images, perception-probe accuracy increases after it. Perception also improves after multimodal RL in every model, whereas it declines after multimodal SFT. In the two textual SFT models, reflection is more frequent in probe answers that become correct after training than in answers that were already correct.</p>
+      <h3 class="finding-title">Textual SFT improves perception</h3>
+      <p class="finding-text">Textual SFT does not use visual inputs, yet it enhances perceptual performance. These gains coincide with reflective reasoning: reflection is more frequent in probe answers that became accurate only after training than in those accurate both before and after training.</p>
       <div class="figure-pair">
         <div class="figure-block">
           <a href="static/figures/new_v4_perception-main.png" target="_blank" rel="noopener"><img src="static/figures/new_v4_perception-main.png" alt="Perception-probe accuracy change with 95% confidence intervals for each training stage" class="figure-img" loading="lazy" width="2400" height="2268"></a>
-          <p class="figure-caption">Percentage-point shifts in perception-probe accuracy from finetuning, with 95% confidence intervals.</p>
+          <p class="figure-caption"><strong>Perception performance shifts from finetuning</strong> in percentage points. Except for multimodal SFT, all methods improve perception.</p>
         </div>
         <div class="figure-block">
           <a href="static/figures/x_reflection_main.png" target="_blank" rel="noopener"><img src="static/figures/x_reflection_main.png" alt="Reflection count distributions for true-to-true and false-to-true probe answers of Revisual-R1 and OVR" class="figure-img" loading="lazy" width="2400" height="1644"></a>
-          <p class="figure-caption">Distribution of reflection counts in probe answers that were correct before and after training (true→true) and that became correct after training (false→true), for Revisual-R1 (top) and OVR (bottom).</p>
+          <p class="figure-caption"><strong>Sample distribution over reflection count.</strong> Reflection is more frequent in false→true cases than in true→true cases.</p>
         </div>
       </div>
     </article>
 
     <article class="finding" id="finding-3">
       <p class="finding-label">Finding 3</p>
-      <h3 class="finding-title">Multimodal-specific errors increase as perception and reasoning improve</h3>
-      <p class="finding-text">In the 7B models, most of the reduction in errors comes from problems on which a model fails both the perception and the reasoning test. Over the same training, the share of multimodal-specific errors, where both tests succeed but the full problem fails, increases, most clearly in the models trained with textual SFT.</p>
+      <h3 class="finding-title">RL improves perception and reasoning in a correlated manner</h3>
+      <p class="finding-text">Residual errors are increasingly categorized as multimodal-specific once the other components improve.</p>
       <div class="figure-block">
         <a href="static/figures/v5_breakdown-main.png" target="_blank" rel="noopener"><img src="static/figures/v5_breakdown-main.png" alt="Stacked bars of error types per model and training stage" class="figure-img figure-img-medium" loading="lazy" width="2400" height="2534"></a>
-        <p class="figure-caption">Distribution of error types per model. “Interaction” denotes the multimodal-specific category.</p>
+        <p class="figure-caption"><strong>Distribution of error types per model.</strong> Most gains come from cases failing in both perception and reasoning. Multimodal-specific residual errors become more prominent as the other categories improve.</p>
       </div>
     </article>
 
     <article class="finding" id="finding-4">
       <p class="finding-label">Finding 4</p>
-      <h3 class="finding-title">Consistency under diagram modifications increases after multimodal RL</h3>
-      <p class="finding-text">We measure consistency as the agreement of a model's answers across modified versions of the same diagram. Consistency increases after multimodal RL in every model and decreases after multimodal SFT. The multimodal SFT models also lose accuracy on newly rendered diagrams while remaining stable on curated ones.</p>
+      <h3 class="finding-title">Multimodal RL improves visual consistency under structural variations</h3>
+      <p class="finding-text">Consistency, the expected agreement of predictions across perturbations of the same diagram, increases after multimodal RL, whereas multimodal SFT lowers it. Multimodal SFT also suffers a sharp drop on newly rendered diagrams, indicating that similar downstream accuracy can hide reliance on visual familiarity.</p>
       <div class="figure-block">
         <a href="static/figures/v8_visual_robustness-main.png" target="_blank" rel="noopener"><img src="static/figures/v8_visual_robustness-main.png" alt="Box plots of accuracy on modified diagrams with base accuracy and consistency rate markers" class="figure-img" loading="lazy" width="2400" height="674"></a>
-        <p class="figure-caption">Accuracy on modified diagrams (boxes) and on the unmodified base diagrams (○), and consistency (◇).</p>
+        <p class="figure-caption"><strong>Robustness to semantic-level visual modifications.</strong> Box plots show accuracy on modified diagrams. Points report accuracy on the unmodified base diagrams and the overall consistency score. Multimodal RL improves consistency, whereas multimodal SFT reduces it.</p>
       </div>
       <div class="figure-block">
         <a href="static/figures/new_v3_diagram_ood-main.png" target="_blank" rel="noopener"><img src="static/figures/new_v3_diagram_ood-main.png" alt="Accuracy change on curated versus rendered diagrams with 95% confidence intervals" class="figure-img figure-img-half" loading="lazy" width="2400" height="2150"></a>
-        <p class="figure-caption">Percentage-point shifts from finetuning on curated versus newly rendered diagrams, with 95% confidence intervals. Lighter bars are not significant.</p>
+        <p class="figure-caption"><strong>Finetuning shifts by diagram type.</strong> Bars show percentage point changes for existing versus OOD rendered diagrams.</p>
       </div>
     </article>
 
     <article class="finding" id="finding-5">
       <p class="finding-label">Finding 5</p>
       <h3 class="finding-title">Perception gains are uneven</h3>
-      <p class="finding-text">Collinear relations improve in every model, and parallel and cocircular relations in most. Angle and polygon relations improve most in the models trained with textual SFT followed by multimodal RL, whereas length relations show no consistent improvement.</p>
+      <p class="finding-text">Multimodal reasoning training preferentially improves skills driven by direct geometric cues, while perception tasks that rely on symbolic marks or long-range visual associations show limited gains.</p>
       <div class="figure-block">
         <a href="static/figures/v6_perception_radar-main.png" target="_blank" rel="noopener"><img src="static/figures/v6_perception_radar-main.png" alt="Radar charts of perception-probe accuracy over ten relation types for six 7B model families" class="figure-img" loading="lazy" width="2400" height="1442"></a>
-        <p class="figure-caption">Perception-probe accuracy by relation type for each model before and after finetuning.</p>
+        <p class="figure-caption"><strong>Perception probe results by question type.</strong></p>
       </div>
     </article>
   </div>
@@ -202,7 +202,7 @@
     <div class="container bit-narrow" style="padding:0">
       <div class="figure-block" style="margin-top:0">
         <a href="static/figures/1_base.png" target="_blank" rel="noopener"><img src="static/figures/1_base.png" alt="MathLens accuracy for backbones and finetuned variants across 7–9B open, 72B open, and closed models" class="figure-img" loading="lazy" width="2400" height="845"></a>
-        <p class="figure-caption">MathLens accuracy (%) of base models (grey) and the corresponding reasoning models.</p>
+        <p class="figure-caption"><strong>Impact of multimodal reasoning training on MathLens.</strong> We evaluate pretrained backbones alongside models finetuned for multimodal reasoning, reporting accuracy (%).</p>
       </div>
     </div>
     <div class="table-controls">
@@ -232,29 +232,29 @@
         <button type="button" class="carousel-btn" data-role="next" aria-label="Next example"><i class="fas fa-chevron-right"></i></button>
       </div>
       <div class="carousel-viewport">
-        <div class="carousel-slide" data-title="Textual SFT recovers a perceptual detail">
+        <div class="carousel-slide" data-title="Model responses for a downstream geometry problem">
           <img src="static/figures/mathlens_ax_sample_changed1.png" alt="The backbone misreads the side lengths and answers 2√119; the textual SFT model makes the same mistake, revises it, and answers 4√21" loading="lazy" width="1440" height="2235">
           <p class="figure-caption">The backbone model fails in perception, leading to an incorrect answer. The textual SFT model initially makes the same mistake but recovers the perceptual detail and produces the correct answer.</p>
         </div>
-        <div class="carousel-slide" data-title="Multimodal RL fixes a reasoning error" hidden>
+        <div class="carousel-slide" data-title="Model responses for a downstream geometry problem" hidden>
           <img src="static/figures/mathlens_ax_sample_changed2.png" alt="A geometry problem where the backbone makes a reasoning error and the multimodal RL model solves it" loading="lazy" width="1440" height="2235">
           <p class="figure-caption">The backbone model exhibits a reasoning error, whereas the multimodal RL model provides the correct solution.</p>
         </div>
-        <div class="carousel-slide" data-title="Perception probe" hidden>
+        <div class="carousel-slide" data-title="Model responses for a perception probe" hidden>
           <img src="static/figures/mathlens_ax_sample_perc1.png" alt="A perception probe where the textual SFT model corrects the backbone's perceptual error" loading="lazy" width="1440" height="2235">
           <p class="figure-caption">The textual SFT model corrects the perceptual error present in the backbone model.</p>
         </div>
-        <div class="carousel-slide" data-title="Flawed reasoning persists after RL" hidden>
+        <div class="carousel-slide" data-title="Model responses for a downstream geometry problem" hidden>
           <img src="static/figures/mathlens_ax_sample_failure1.png" alt="A geometry problem where the multimodal RL model inherits the backbone's flawed reasoning" loading="lazy" width="1440" height="2235">
           <p class="figure-caption">The multimodal RL model inherits the backbone model's flawed reasoning, leading to perception errors and downstream failure.</p>
         </div>
-        <div class="carousel-slide" data-title="Multimodal RL fixes perception but fails in reasoning" hidden>
+        <div class="carousel-slide" data-title="Model responses for a downstream geometry problem" hidden>
           <img src="static/figures/mathlens_ax_sample_failure2.png" alt="A geometry problem where the multimodal RL model corrects the perceptual error but fails in reasoning" loading="lazy" width="1440" height="2235">
           <p class="figure-caption">The multimodal RL model corrects the perceptual error of the backbone model but ultimately fails to produce the correct answer due to a reasoning error.</p>
         </div>
-        <div class="carousel-slide" data-title="MathLens-NS sample" hidden>
+        <div class="carousel-slide" data-title="Data samples from MathLens-NS" hidden>
           <img src="static/figures/mathlens_ax_sample_general1.jpg" alt="A MathLens-NS sample curated from BLINK with its text description and perception-centric question-answers" loading="lazy" width="1440" height="2235">
-          <p class="figure-caption">A MathLens-NS problem curated from BLINK (Fu et al., 2024), with its annotated text description and perception-centric question-answers.</p>
+          <p class="figure-caption">We curate problem instance from a prior dataset (Fu et al., 2024) and annotate the text description and perception-centric question-answers.</p>
         </div>
       </div>
     </div>
