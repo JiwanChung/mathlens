@@ -111,7 +111,8 @@
       Most multimodal reasoning benchmarks report only aggregate accuracy, obscuring whether errors stem from perception, reasoning, or their interaction. MathLens is designed to separately probe these components while preserving realistic problem contexts.
     </p>
 
-    <h3 class="subsection-title">Isolating components</h3>
+    <h3 class="subsection-title">Separate tests attribute errors to perception, reasoning, or their interaction</h3>
+    <p class="subsection-lead">Perception probes ask about facts shown in the diagram, and a complete text description replaces the diagram to test reasoning without perception. Failures on the full problem when both succeed are multimodal-specific.</p>
     <div class="demo" data-role="decomp">
       <div class="decomp-grid">
         <div class="decomp-view">
@@ -178,7 +179,8 @@
       </div>
     </div>
 
-    <h3 class="subsection-title">Data generation</h3>
+    <h3 class="subsection-title">Every test is generated from one symbolic specification, enabling controlled measurement</h3>
+    <p class="subsection-lead">Each problem is specified as a semantic state of atomic facts. The diagram, text description, question, and perception probes are all generated from it.</p>
     <div class="demo" data-role="gen">
       <div class="gen-wrap">
         <div class="gen-state">
@@ -217,7 +219,8 @@
       <p class="demo-note">From a semantic state representation, we build controlled text descriptions, perception probes, and questions with no overlap with visual content. New diagrams are rendered from the semantic state to avoid visual familiarity effects.</p>
     </div>
 
-    <h3 class="subsection-title">Diagram modifications</h3>
+    <h3 class="subsection-title">Semantic diagram modifications test robustness while preserving the answer</h3>
+    <p class="subsection-lead">Pixel-level perturbations often cause prediction shifts driven by abnormal appearance rather than semantic change. Modifying the semantic state and re-rendering keeps the answer fixed, so robustness is measured by prediction agreement across variants.</p>
     <div class="demo" data-role="mods">
       <div class="seg mods-seg" role="group" aria-label="Diagram modification">
         <button type="button" data-mod="original">Original</button>
