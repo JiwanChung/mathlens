@@ -188,6 +188,10 @@ strong { font-weight: 600; color: #363636; }
 }
 .finding-text { font-size: 1.1rem; line-height: 1.7; }
 .finding .figure-block { margin: 20px 0 0; }
+.finding-subtitle {
+  margin: 2.5rem 0 0.5rem; font-size: 1.2rem; font-weight: 600; color: #363636;
+  font-family: 'Google Sans', 'Noto Sans', sans-serif;
+}
 
 /* ── Examples carousel ── */
 .examples-section { padding: 3rem 1.5rem; background: var(--bg); }
@@ -243,6 +247,7 @@ footer { padding: 24px; text-align: center; font-size: 0.85rem; color: var(--tex
   .teaser-tldr { font-size: 1.05rem; }
   .section-lead, .finding-text { font-size: 1rem; }
   .finding-title { font-size: 1.2rem; }
+  .finding-subtitle { font-size: 1.05rem; }
   .finding-card { flex-basis: 100%; }
   .figure-pair { grid-template-columns: 1fr; }
   .carousel-count { min-width: 0; }

@@ -134,7 +134,7 @@
     <article class="finding" id="finding-1">
       <p class="finding-label">Finding 1</p>
       <h3 class="finding-title">Multimodal RL impact varies with textual reasoning strength</h3>
-      <p class="finding-text">With strong textual SFT it mainly boosts perception; without it, it modestly improves both modalities.</p>
+      <p class="finding-text">With strong textual SFT, multimodal RL mainly boosts perception; without it, RL modestly improves both modalities.</p>
       <div class="figure-block">
         <a href="static/figures/new_v2_visual_vs_text-main.png" target="_blank" rel="noopener"><img src="static/figures/new_v2_visual_vs_text-main.png" alt="Performance gains by input modality" class="figure-img figure-img-half" loading="lazy" width="2400" height="2150"></a>
         <p class="figure-caption"><strong>Performance gains by input modality.</strong> Bars show percentage point shifts from finetuning for text versus diagram inputs.</p>
@@ -144,7 +144,7 @@
     <article class="finding" id="finding-2">
       <p class="finding-label">Finding 2</p>
       <h3 class="finding-title">Textual SFT improves perception partially through reflective reasoning</h3>
-      <p class="finding-text">Textual SFT does not use visual inputs, yet it enhances perceptual performance. We examined the reasoning traces of two models with textual SFT: reflective reasoning was more frequent in predictions that became accurate only after training (false→true) than in those accurate both before and after training (true→true). These results indicate that textual SFT promotes reflective reasoning, which enables models to revisit and correct initial perceptual errors.</p>
+      <p class="finding-text">Textual SFT does not use visual inputs, yet it enhances perceptual performance. Reflective reasoning is more frequent in predictions that became accurate after training than in those that were already accurate.</p>
       <div class="figure-pair">
         <div class="figure-block">
           <a href="static/figures/new_v4_perception-main.png" target="_blank" rel="noopener"><img src="static/figures/new_v4_perception-main.png" alt="Perception performance shifts from finetuning" class="figure-img" loading="lazy" width="2400" height="2268"></a>
@@ -160,7 +160,7 @@
     <article class="finding" id="finding-3">
       <p class="finding-label">Finding 3</p>
       <h3 class="finding-title">RL improves perception and reasoning in a correlated manner</h3>
-      <p class="finding-text">RL primarily reduces perception and reasoning errors on the same problems, indicating correlated gains. Yet many of the reductions manifest as multimodal-specific residuals, suggesting that finetuning often shifts them into coordination failures rather than eliminating them outright.</p>
+      <p class="finding-text">RL primarily reduces perception and reasoning errors on the same problems, but many of the reductions manifest as multimodal-specific residuals.</p>
       <div class="figure-block">
         <a href="static/figures/v5_breakdown-main.png" target="_blank" rel="noopener"><img src="static/figures/v5_breakdown-main.png" alt="Distribution of error types per model" class="figure-img figure-img-medium" loading="lazy" width="2400" height="2534"></a>
         <p class="figure-caption"><strong>Distribution of error types per model.</strong> Most gains come from cases failing in both perception and reasoning. Multimodal-specific residual errors become more prominent as the other categories improve.</p>
@@ -170,11 +170,13 @@
     <article class="finding" id="finding-4">
       <p class="finding-label">Finding 4</p>
       <h3 class="finding-title">Multimodal RL improves visual consistency under structural variations</h3>
-      <p class="finding-text">To quantify robustness, we use Consistency Rate, the expected agreement of predictions across perturbations of the same diagram. Consistency increases after multimodal RL, suggesting robustness to variation. By contrast, multimodal SFT lowers consistency. While most training methods are stable under familiar diagrams, multimodal SFT suffers a sharp drop on newly rendered diagrams. This indicates that similar downstream accuracy on public benchmarks can hide reliance on visual familiarity.</p>
+      <p class="finding-text">Multimodal RL improves consistency, the expected agreement of predictions across perturbations of the same diagram, whereas multimodal SFT reduces it.</p>
       <div class="figure-block">
         <a href="static/figures/v8_visual_robustness-main.png" target="_blank" rel="noopener"><img src="static/figures/v8_visual_robustness-main.png" alt="Robustness to semantic-level visual modifications" class="figure-img" loading="lazy" width="2400" height="674"></a>
-        <p class="figure-caption"><strong>Robustness to semantic-level visual modifications.</strong> Box plots show accuracy on modified diagrams. Points report accuracy on the unmodified base diagrams and the overall consistency score. Multimodal RL improves consistency, whereas multimodal SFT reduces it.</p>
+        <p class="figure-caption"><strong>Robustness to semantic-level visual modifications.</strong> Box plots show accuracy on modified diagrams. Points report accuracy on the unmodified base diagrams and the overall consistency score.</p>
       </div>
+      <h4 class="finding-subtitle">Downstream accuracy can mask familiarity effects</h4>
+      <p class="finding-text">While most training methods are stable under familiar diagrams, multimodal SFT suffers a sharp drop on newly rendered diagrams.</p>
       <div class="figure-block">
         <a href="static/figures/new_v3_diagram_ood-main.png" target="_blank" rel="noopener"><img src="static/figures/new_v3_diagram_ood-main.png" alt="Finetuning shifts by diagram type" class="figure-img figure-img-half" loading="lazy" width="2400" height="2150"></a>
         <p class="figure-caption"><strong>Finetuning shifts by diagram type.</strong> Bars show percentage point changes for existing versus OOD rendered diagrams.</p>
