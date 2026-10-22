@@ -108,11 +108,11 @@
   <div class="container bit-narrow">
     <h2 class="section-title">MathLens</h2>
     <p class="section-lead">
-      Most multimodal reasoning benchmarks report only aggregate accuracy, obscuring whether errors stem from perception, reasoning, or their interaction. MathLens is designed to separately probe these components while preserving realistic problem contexts.
+      Aggregate accuracy obscures whether errors stem from perception, reasoning, or their interaction. MathLens probes these components separately.
     </p>
 
-    <h3 class="subsection-title">Separate tests attribute errors to perception, reasoning, or their interaction</h3>
-    <p class="subsection-lead">Perception probes ask about facts shown in the diagram, and a complete text description replaces the diagram to test reasoning without perception. Failures on the full problem when both succeed are multimodal-specific.</p>
+    <h3 class="subsection-title">Separate tests attribute errors to perception or reasoning</h3>
+    <p class="subsection-lead">Probes test perception; a text description in place of the diagram tests reasoning. Failures when both pass are multimodal-specific.</p>
     <div class="demo" data-role="decomp">
       <div class="decomp-grid">
         <div class="decomp-view">
@@ -179,8 +179,8 @@
       </div>
     </div>
 
-    <h3 class="subsection-title">Every test is generated from one symbolic specification, enabling controlled measurement</h3>
-    <p class="subsection-lead">Each problem is specified as a semantic state of atomic facts. The diagram, text description, question, and perception probes are all generated from it.</p>
+    <h3 class="subsection-title">One symbolic specification generates every test</h3>
+    <p class="subsection-lead">Diagram, text, question, and probes share the same facts, keeping measurement controlled.</p>
     <div class="demo" data-role="gen">
       <div class="gen-wrap">
         <div class="gen-state">
@@ -216,11 +216,11 @@
           </div>
         </div>
       </div>
-      <p class="demo-note">From a semantic state representation, we build controlled text descriptions, perception probes, and questions with no overlap with visual content. New diagrams are rendered from the semantic state to avoid visual familiarity effects.</p>
+      <p class="demo-note">Questions omit facts shown in the diagram, and diagrams are newly rendered to avoid visual familiarity.</p>
     </div>
 
-    <h3 class="subsection-title">Semantic diagram modifications test robustness while preserving the answer</h3>
-    <p class="subsection-lead">Pixel-level perturbations often cause prediction shifts driven by abnormal appearance rather than semantic change. Modifying the semantic state and re-rendering keeps the answer fixed, so robustness is measured by prediction agreement across variants.</p>
+    <h3 class="subsection-title">Semantic modifications test robustness</h3>
+    <p class="subsection-lead">Unlike pixel noise, they change the diagram but not the answer; robustness is agreement across variants.</p>
     <div class="demo" data-role="mods">
       <div class="seg mods-seg" role="group" aria-label="Diagram modification">
         <button type="button" data-mod="original">Original</button>
@@ -232,7 +232,6 @@
       </div>
       <svg class="dg dg-mods" data-role="mods-diagram" role="img" aria-label="The example diagram under the selected modification"></svg>
       <div class="mods-qa"><span class="mods-q" data-role="mods-question">Find measure of angle IAF.</span><span class="arrow">→</span><span class="answer-value small">47</span></div>
-      <p class="demo-note">To test visual robustness, we generate diagram variants by altering the semantic state, including adding auxiliary elements, applying flips or rotations, merging instances, and relabeling points, while preserving the ground-truth answer.</p>
     </div>
   </div>
 </section>
