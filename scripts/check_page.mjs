@@ -2,7 +2,7 @@
 // Usage: node scripts/check_page.mjs <url> <screenshot-dir>
 // Fails (exit 1) on: console errors or uncaught exceptions, HTTP >= 400,
 // images that don't load, KaTeX errors, horizontal page overflow,
-// or an explorer / tab state that doesn't match the data.
+// or a results table / finding card / carousel state that doesn't match the data.
 import { spawn } from 'node:child_process';
 import { mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -67,57 +67,60 @@ const PAGE_CHECKS = `(async () => {
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   const imgs = [...document.querySelectorAll('img')];
   imgs.forEach((i) => { i.loading = 'eager'; });
-  // Hidden tab panels never load lazily; show each briefly so its image loads.
-  const panels = [...document.querySelectorAll('.example')];
-  panels.forEach((p) => { p.hidden = false; });
+  // Hidden panels and slides never load lazily; unhide them briefly so their images load.
+  const hidden = [...document.querySelectorAll('.finding-detail-content, .carousel-slide')].filter((e) => e.hidden);
+  hidden.forEach((e) => { e.hidden = false; });
   await Promise.all(imgs.map((i) => i.complete ? null : new Promise((r) => { i.onload = r; i.onerror = r; })));
   const badImgs = imgs.filter((i) => !(i.complete && i.naturalWidth > 0)).map((i) => i.getAttribute('src'));
-  panels.forEach((p, j) => { p.hidden = j !== 0; });
+  hidden.forEach((e) => { e.hidden = true; });
 
   const report = {
     images: imgs.length, badImgs,
     katex: document.querySelectorAll('.katex').length,
     katexErrors: document.querySelectorAll('.katex-error').length,
     overflow: document.documentElement.scrollWidth - window.innerWidth,
-    explorer: [], tabs: [],
+    tables: [], findings: [], carousel: [],
   };
 
+  // Results table: every value cell must equal results.json, formatted to one decimal.
   const data = await (await fetch('static/data/results.json')).json();
-  const pills = [...document.querySelectorAll('#explorer-widget .pill')];
-  const metrics = [...document.querySelectorAll('#explorer-widget [data-role=metric] button')];
-  for (const pill of pills) {
-    for (const mb of metrics) {
-      pill.click(); mb.click();
-      await sleep(30);
-      const model = data.models.find((m) => m.name === pill.dataset.model);
-      const key = mb.dataset.metric;
-      const values = model.stages.flatMap((s) => s[key]);
-      const rects = document.querySelectorAll('#explorer-widget [data-role=chart] svg rect').length;
-      const rows = document.querySelectorAll('#explorer-widget [data-role=table] tbody tr').length;
-      // Every rendered table cell must equal the data, formatted to one decimal.
-      const cells = [...document.querySelectorAll('#explorer-widget [data-role=table] tbody tr:not(.delta)')]
-        .flatMap((tr) => [...tr.querySelectorAll('td')].slice(2).map((td) => td.textContent));
-      const expected = values.map((v) => v === null ? 'n/e' : v.toFixed(1));
-      report.explorer.push({
-        model: model.name, metric: key,
-        rectsOk: rects === values.filter((v) => v !== null).length,
-        rowsOk: rows === model.stages.length + 1,
-        cellsOk: JSON.stringify(cells) === JSON.stringify(expected),
-        title: document.querySelector('#explorer-widget [data-role=title]').textContent === model.name,
-      });
-    }
+  for (const b of document.querySelectorAll('[data-role=metric] button')) {
+    b.click();
+    await sleep(30);
+    const key = b.dataset.metric;
+    const rows = [...document.querySelectorAll('#results-table tbody tr:not(.size-head)')];
+    const cells = rows.map((tr) => [...tr.querySelectorAll('td')].filter((td) => !td.classList.contains('model') && !td.classList.contains('variant')).map((td) => td.textContent));
+    const expected = data.models.flatMap((m) => m.stages.map((s) => s[key].map((v) => v === null ? '–' : v.toFixed(1))));
+    const variants = rows.map((tr) => tr.querySelector('td.variant').textContent);
+    report.tables.push({
+      metric: key,
+      cellsOk: JSON.stringify(cells) === JSON.stringify(expected),
+      variantsOk: JSON.stringify(variants) === JSON.stringify(data.models.flatMap((m) => m.stages.map((s) => s.variant))),
+      sizeHeads: document.querySelectorAll('#results-table tr.size-head').length,
+      overflow: document.documentElement.scrollWidth - window.innerWidth,
+    });
   }
-  const tabs = [...document.querySelectorAll('[data-role=example-tabs] [role=tab]')];
-  for (const t of tabs) {
-    t.click();
+  document.querySelector('[data-role=metric] button').click();
+
+  // Finding cards: each shows exactly its own panel.
+  for (const c of document.querySelectorAll('.finding-card')) {
+    c.click();
     await sleep(10);
-    const visible = panels.filter((p) => !p.hidden).map((p) => p.id);
-    report.tabs.push({ tab: t.id, ok: visible.length === 1 && visible[0] === t.getAttribute('aria-controls') });
+    const visible = [...document.querySelectorAll('.finding-detail-content')].filter((p) => !p.hidden).map((p) => p.dataset.finding);
+    report.findings.push({ card: c.dataset.finding, ok: visible.length === 1 && visible[0] === c.dataset.finding && c.classList.contains('active') });
   }
-  tabs[0].click();
-  // Restore the default explorer state for the screenshot.
-  document.querySelector('#explorer-widget .pill[data-model="Revisual-R1-7B"]').click();
-  metrics[0].click();
+  document.querySelector('.finding-card').click();
+
+  // Carousel: next walks through every slide once and wraps to the first.
+  const slides = [...document.querySelectorAll('.carousel-slide')];
+  const next = document.querySelector('[data-role=carousel] [data-role=next]');
+  for (let k = 0; k <= slides.length; k++) {
+    const visible = slides.map((s, j) => s.hidden ? -1 : j).filter((j) => j >= 0);
+    report.carousel.push(visible.length === 1 && visible[0] === k % slides.length);
+    next.click();
+    await sleep(10);
+  }
+  document.querySelector('[data-role=carousel] [data-role=prev]').click();
   report.overflowAfter = document.documentElement.scrollWidth - window.innerWidth;
   return report;
 })()`;
@@ -160,9 +163,11 @@ async function checkViewport(vp, failures) {
   if (report.katex === 0) bad.push('no KaTeX output');
   if (report.katexErrors) bad.push(`${report.katexErrors} KaTeX errors`);
   if (report.overflow > 0 || report.overflowAfter > 0) bad.push(`horizontal overflow ${report.overflow}/${report.overflowAfter}px`);
-  for (const e of report.explorer) if (!(e.rectsOk && e.rowsOk && e.cellsOk && e.title)) bad.push('explorer mismatch: ' + JSON.stringify(e));
-  for (const t of report.tabs) if (!t.ok) bad.push('tab mismatch: ' + t.tab);
-  console.log(`[${vp.name}] images=${report.images} katex=${report.katex} explorer-states=${report.explorer.length} tabs=${report.tabs.length} height=${Math.ceil(cssContentSize.height)} screenshot=${shotPath}`);
+  for (const t of report.tables) if (!(t.cellsOk && t.variantsOk && t.sizeHeads === 3) || t.overflow > 0) bad.push('table mismatch: ' + JSON.stringify(t));
+  for (const f of report.findings) if (!f.ok) bad.push('finding card mismatch: ' + f.card);
+  if (report.findings.length !== 5) bad.push(`expected 5 finding cards, got ${report.findings.length}`);
+  if (report.carousel.length !== 7 || !report.carousel.every(Boolean)) bad.push('carousel mismatch: ' + JSON.stringify(report.carousel));
+  console.log(`[${vp.name}] images=${report.images} katex=${report.katex} tables=${report.tables.length} findings=${report.findings.length} slides=${report.carousel.length - 1} height=${Math.ceil(cssContentSize.height)} screenshot=${shotPath}`);
   bad.forEach((b) => console.log(`[${vp.name}] FAIL ${b}`));
   failures.push(...bad);
   cdp.close();

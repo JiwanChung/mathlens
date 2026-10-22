@@ -11,10 +11,10 @@ Jiwan Chung, Neel Joshi, Pratyusha Sharma, Youngjae Yu, Vibhav Vineet
 [Academic Project Page Template](https://github.com/eliahuhorwitz/Academic-project-page-template).
 `.github/workflows/deploy.yml` publishes `page/` to GitHub Pages on every push to `main`.
 
-- `page/index.html`: page content. Text and figures are from the paper.
-- `page/page.js`: math rendering (KaTeX), the section-nav scrollspy, the example tabs, and BibTeX copy.
-- `page/explorer.js`: the results explorer. It draws `page/static/data/results.json` as grouped bars
-  with an exact-value table underneath.
+- `page/index.html`: page content. Text and figures are from the paper. The layout follows the
+  deployed `rethinking-state-tracking` page.
+- `page/page.js`: math rendering (KaTeX), the Analysis finding cards, the examples carousel, and BibTeX copy.
+- `page/results.js`: the Results table, drawn from `page/static/data/results.json`.
 - `page/static/data/results.json`: the paper's appendix tables (downstream accuracy across diagram
   modifications, perception-probe accuracy by relation type, and the checkpoint behind each row).
   `scripts/export_page_data.py` parses them from the paper's LaTeX source and records the source
@@ -22,8 +22,9 @@ Jiwan Chung, Neel Joshi, Pratyusha Sharma, Youngjae Yu, Vibhav Vineet
 - `page/static/figures/`: paper figures rendered from the paper PDFs by `scripts/render_figures.sh`
   (`pdftoppm`, 2400 px wide for main-body figures and 1440 px for appendix examples).
 - `scripts/check_page.mjs`: headless-Chrome check at 1280 px and 390 px. It fails on console errors,
-  HTTP errors, images that don't load, KaTeX errors, horizontal page overflow, or explorer cells
-  that don't match `results.json`. It also saves full-page screenshots.
+  HTTP errors, images that don't load, KaTeX errors, horizontal page overflow, Results-table cells
+  that don't match `results.json`, or finding cards / carousel slides that don't switch. It also
+  saves full-page screenshots.
 
 Preview and check locally:
 
