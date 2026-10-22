@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>What MLLMs Learn about When they Learn about Multimodal Reasoning</title>
+  <meta name="description" content="MathLens splits multimodal reasoning accuracy into perception, reasoning, and a multimodal-specific residual, using geometry problems derived from symbolic specifications.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="What MLLMs Learn about When they Learn about Multimodal Reasoning">
+  <meta property="og:description" content="MathLens splits multimodal reasoning accuracy into perception, reasoning, and a multimodal-specific residual, using geometry problems derived from symbolic specifications.">
+  <meta property="og:url" content="https://jiwanchung.github.io/mathlens/">
+  <meta property="og:image" content="https://jiwanchung.github.io/mathlens/static/figures/fixed_fig1.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="data:,">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h8"/></symbol>
+  <symbol id="i-ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M8 7h9v9"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="1"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></symbol>
+</svg>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="hero">
+  <p class="venue">NeurIPS 2026</p>
+  <h1>What MLLMs Learn about When they Learn about Multimodal Reasoning</h1>
+  <p class="authors">
+    <a href="https://jiwanchung.github.io/">Jiwan Chung</a><sup>1,2*</sup>,
+    Neel Joshi<sup>1</sup>,
+    <a href="https://pratyushasharma.github.io/">Pratyusha Sharma</a><sup>1</sup>,
+    <a href="https://yj-yu.github.io/home/">Youngjae Yu</a><sup>3†</sup>,
+    <a href="https://vibhav-vineet.github.io/">Vibhav Vineet</a><sup>1†</sup>
+  </p>
+  <p class="affil"><sup>1</sup>Microsoft Research AI Frontiers &nbsp;·&nbsp; <sup>2</sup>Yonsei University &nbsp;·&nbsp; <sup>3</sup>Seoul National University</p>
+  <p class="author-notes"><sup>*</sup>Work done while interning at Microsoft Research &nbsp;·&nbsp; <sup>†</sup>Co-principal investigators</p>
+  <div class="links">
+    <a class="link-btn" href="https://arxiv.org/abs/2510.01719"><svg><use href="#i-file"/></svg>arXiv<svg class="ext"><use href="#i-ext"/></svg></a>
+    <a class="link-btn" href="#citation">BibTeX</a>
+  </div>
+</header>
+
+<noscript><p class="noscript">The results explorer and the example tabs on this page need JavaScript. Every figure and number is also in the <a href="https://arxiv.org/abs/2510.01719">paper</a>.</p></noscript>
+
+<main id="main">
+
+<figure class="wide teaser" id="fig-teaser">
+  <div class="fig-scroll"><img src="static/figures/fixed_fig1.png" alt="Left: MathLens downstream error rate of a backbone MLLM and of models trained with direct RL, multimodal SFT, multimodal SFT plus RL, textual SFT, and textual SFT plus RL. Right: the same errors split into reasoning, joint, perception, and integration error rates, with arrows marking the direction of change for each recipe." class="figure-img" width="2400" height="631"></div>
+  <figcaption>
+    <strong>MathLens decomposes multimodal reasoning errors</strong> into perception, reasoning, and a residual multimodal-specific category (“Integration” in the figure), revealing component-specific shifts after finetuning that are hidden by aggregate accuracy. Arrows mark the direction of change for each training recipe: green is fewer errors, red is more.
+  </figcaption>
+</figure>
+
+<div class="prose summary">
+  <p class="lead">
+    Multimodal reasoning models are usually compared by one accuracy score. MathLens is a benchmark of 926 textbook-style geometry problems that splits that score into perception, reasoning, and a multimodal-specific residual. Every problem is derived from a symbolic specification, so its diagram, its text-only version, its question, and its perception probes all state exactly the same facts. Comparing released multimodal reasoning models with their backbones, we find that models trained with different recipes have distinct capability profiles that aggregate accuracy does not show.
+  </p>
+  <details class="abstract">
+    <summary>Abstract</summary>
+    <p>
+      Evaluation of multimodal reasoning models is typically reduced to a single accuracy score, implicitly treating reasoning as a unitary capability. We introduce MathLens, a benchmark of textbook-style geometry problems that exposes this assumption by operationally decomposing performance into perception, reasoning, and multimodal-specific components. Each problem is derived from a symbolic specification and accompanied by visual diagrams, text-only variants, multimodal questions, and targeted perceptual probes, enabling controlled measurement of each component. Using this decomposition, we show that models trained with common strategies exhibit systematically different capability profiles that are invisible under aggregate accuracy. Models trained with reinforcement learning gain primarily in perceptual grounding and in robustness to diagram variation, while gains after textual SFT coincide with more reflective reasoning. In contrast, as perception and reasoning improve, a growing fraction of remaining errors fall outside these components and are categorized as multimodal-specific. These results suggest that apparent progress in multimodal reasoning reflects shifting balances among subskills rather than uniform advancement, motivating evaluation beyond scalar accuracy.
+    </p>
+  </details>
+</div>
+
+<nav class="section-nav" aria-label="Sections">
+  <ul>
+    <li><a href="#benchmark">Benchmark</a></li>
+    <li><a href="#construction">Construction</a></li>
+    <li><a href="#findings">Findings</a></li>
+    <li><a href="#explorer">Explorer</a></li>
+    <li><a href="#examples">Examples</a></li>
+    <li><a href="#citation">Citation</a></li>
+  </ul>
+</nav>
+
+<!-- ── Benchmark ── -->
+<section class="section" id="benchmark">
+  <div class="prose">
+    <h2>One accuracy score, three sources of error</h2>
+    <p>
+      Most multimodal reasoning benchmarks report only aggregate accuracy. That hides whether an error comes from perception (extracting information from the input), from reasoning (operating on the extracted information), or from their interaction. MathLens is designed to probe these components separately while keeping realistic problem contexts.
+    </p>
+  </div>
+
+  <figure class="wide figure-band" id="fig-task">
+    <div class="fig-scroll"><img src="static/figures/mathlens_main2.png" alt="A geometry problem asking for angle IAF, tested four ways: (1) the multimodal reasoning test with diagram and question; (2) a perception test with two-option probes such as which angle measures 65 degrees; (3) a reasoning test where a complete text description replaces the diagram; (4) the integration case, where perception and reasoning succeed separately but multimodal reasoning fails." class="figure-img" loading="lazy" width="2400" height="704"></div>
+    <figcaption>
+      <strong>The joint Multimodal Reasoning Test (1) is decomposed into a Perception Test and a textual Reasoning Test.</strong> The Perception Test (2) asks questions answerable directly from the diagram, such as reading an annotated angle (\(\angle DFB\)). The Reasoning Test (3) replaces the diagram with a complete textual description, so the question can be solved without visual access. The multimodal-specific category (4, “Integration”) covers cases where multimodal reasoning fails even though perception and reasoning, tested independently, succeed.
+    </figcaption>
+  </figure>
+
+  <div class="prose">
+    <p>
+      For each problem \(k\), MathLens has access to its semantic state \(S_k = \{s_{k,1}, \ldots, s_{k,m}\}\), a set of atomic facts such as \(\angle ABC = 50^\circ\), and a query operator \(\varphi_k\) such as “compute \(\angle A\)”. The diagram, the text description, the question, and the probes are all generated from \(S_k\). That makes three tests possible:
+    </p>
+    <dl class="defs">
+      <div>
+        <dt>Perception</dt>
+        <dd>Each atom \(s_{k,i}\) becomes a probe question whose gold answer is the atom’s valuation. The probes check whether the model can recover, from the diagram, the specific facts needed to solve the problem. Errors here indicate perceptual failures.</dd>
+      </div>
+      <div>
+        <dt>Reasoning</dt>
+        <dd>A text description that directly encodes the relevant details replaces the diagram. This trivializes perception, so the task reduces to applying \(\varphi_k\) correctly. Errors here isolate reasoning competence, free from perceptual confounds.</dd>
+      </div>
+      <div>
+        <dt>Multimodal-specific</dt>
+        <dd>Conditional on success in the perception probes and in text-only reasoning, any remaining error on the full diagram task is a multimodal-specific residual. The category is defined operationally, as what is left after controlling for the measured perception and reasoning components.</dd>
+      </div>
+    </dl>
+
+    <h3>Attributing a wrong answer</h3>
+    <p>When the answer to the diagram question is wrong, the two isolated tests assign the error to one of four types:</p>
+    <div class="table-scroll" style="margin-top:0">
+      <table class="attr">
+        <thead>
+          <tr><th></th><th>Text-only reasoning correct</th><th>Text-only reasoning wrong</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Perception probes correct</th>
+            <td class="is-key"><span class="cat"><span class="chip e-mm"></span>Multimodal-specific</span></td>
+            <td><span class="cat"><span class="chip e-reas"></span>Reasoning</span></td>
+          </tr>
+          <tr>
+            <th scope="row">Perception probes wrong</th>
+            <td><span class="cat"><span class="chip e-perc"></span>Perception</span></td>
+            <td><span class="cat"><span class="chip e-both"></span>Perception &amp; Reasoning</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="caption" style="margin-left:0">Correct answers are split further into <em>Trivial</em> (solvable from text alone) and <em>Rest</em>. Colors match the error-type figure in <a href="#finding-3">Finding 3</a>.</p>
+  </div>
+</section>
+
+<!-- ── Construction ── -->
+<section class="section" id="construction">
+  <div class="prose">
+    <h2>Every view is generated from one symbolic state</h2>
+    <p>
+      Each instance is first specified symbolically, as \(S_k\) and \(\varphi_k\), and then rendered into its observable forms: diagrams, textual descriptions, and several types of questions. The problems match the domain and complexity of popular benchmarks such as MathVista and MathVerse.
+    </p>
+  </div>
+
+  <figure class="wide figure-band" id="fig-data">
+    <div class="fig-scroll"><img src="static/figures/fixed_fig3.png" alt="(a) The semantic state of a problem as predicates such as Collinear(GBFI) and Equal(MeasureOfAngle(BDF), 47); (b) the question 'Find measure of angle IAF', contrasted with an uncontrolled question that restates the angles; (c) the text description; (d) perception probes with two choices; (e) the diagram rendered from the predicates, next to the existing diagram. A side panel gives the scoring of the perception, reasoning, and multimodal tests." class="figure-img" loading="lazy" width="2400" height="825"></div>
+    <figcaption>
+      <strong>Sample data generation process in MathLens.</strong> From a semantic state, we build controlled text descriptions, perception probes, and questions with no overlap with the visual content. New diagrams are rendered from the semantic state to avoid visual familiarity effects.
+    </figcaption>
+  </figure>
+
+  <div class="prose">
+    <ol class="steps">
+      <li><span class="step-key">a</span><span><strong>Data source.</strong> FormalGeo-7K provides symbolic annotations for geometry problems. Each diagram cue or condition is a predicate, e.g. <code>Collinear(AB,BC)</code> or <code>EqualLength(AB,CD)</code>, and together they form \(S_k\).</span></li>
+      <li><span class="step-key">b</span><span><strong>Questions.</strong> A question is the clauses \([S_k^{\mathrm{q}}; \varphi_k]\). Clauses that overlap with the diagram context are dropped, so the question cannot be answered without the diagram.</span></li>
+      <li><span class="step-key">c</span><span><strong>Text descriptions.</strong> A template maps each atom to a clause, e.g. <code>EqualLength(AB,CD)</code> → “Segment AB is equal in length to segment CD”: a faithful rendering of \(S_k\) without stylistic variation.</span></li>
+      <li><span class="step-key">d</span><span><strong>Perception probes.</strong> Each atom becomes a probe, e.g. <code>Collinear(AB,BC)</code> → “Which points are collinear? A. ABC B. ABD”, with answer A and negative B.</span></li>
+      <li><span class="step-key">e</span><span><strong>Diagram rendering.</strong> Each clause becomes a geometric constraint, e.g. <code>Perpendicular(AB,BC)</code> → \((x_a - x_b)(x_c - x_b) + (y_a - y_b)(y_c - y_b) = 0\). A numerical solver finds coordinates that satisfy all constraints, and the result is rendered and manually filtered to remove artifacts such as occlusions or overlaps.</span></li>
+      <li><span class="step-key">+</span><span><strong>Diagram modifications.</strong> Altering \(S_k\) while preserving the answer gives semantic variants: added auxiliary lines or shapes, flips, rotations, merged instances, and relabeled points. All variants are manually screened.</span></li>
+    </ol>
+  </div>
+
+  <div class="wide">
+    <div class="stats">
+      <div class="stat"><span class="num">926</span><span class="lbl">geometry problems</span></div>
+      <div class="stat"><span class="num">8</span><span class="lbl">diagram versions per problem: the original, a newly rendered one, and six modifications</span></div>
+      <div class="stat"><span class="num">≈7.03</span><span class="lbl">perception probes per problem</span></div>
+      <div class="stat"><span class="num">107</span><span class="lbl">MathLens-NS problems from other domains, ≈7.96 probes each</span></div>
+    </div>
+  </div>
+
+  <div class="prose">
+    <p class="caption" style="margin-left:0">
+      MathLens-NS is a supplementary set of multimodal reasoning problems from diverse domains. It trades the formal semantic control of geometry for broader coverage, so it has no explicit semantic state; it is curated from prior sources through a filtering pipeline. Details are in the paper’s appendix.
+    </p>
+  </div>
+</section>
+
+<!-- ── Findings ── -->
+<section class="section" id="findings">
+  <div class="prose">
+    <h2>What changes after multimodal reasoning training</h2>
+    <p>
+      We evaluate seven open-weight model families in the 7–9B range, 13 checkpoints in total, grouped by training recipe: <strong>direct multimodal RL</strong> (VL-Rethinker, ShareVL-R1), <strong>multimodal SFT followed by multimodal RL</strong> (R1-OneVision, Vision-R1), and <strong>textual SFT followed by multimodal RL</strong> (Revisual-R1, OVR), each next to its Qwen2.5-VL-7B backbone. GLM-4.1V-Thinking is outside these categories because its training data is undisclosed. Qwen2.5-VL-72B, VL-Rethinker-72B, Gemini-2.5-Flash, Claude 4 Sonnet, and GPT-4o/o3 serve as larger and closed reference points.
+    </p>
+    <p class="scope">
+      All comparisons are between released checkpoints and their backbones. Changes between stages carry paired bootstrap 95% confidence intervals over problem instances. Across eight models, MathLens accuracy correlates with MathVista (Spearman’s \(\rho = 0.83\)) and MathVerse (\(\rho = 0.86\)), and more weakly with MathVision (\(\rho = 0.67\)).
+    </p>
+  </div>
+
+  <figure class="wide figure-band" id="fig-main">
+    <div class="fig-scroll"><img src="static/figures/1_base.png" alt="Grouped bar chart of MathLens accuracy for backbones and finetuned variants: rethinker 33 to 36, sharevl 33 to 35, r1-onevision 33, 30, 32, vision-r1 33, 27, 36, revisual 33, 39, 46, ovr 33, 39, 44, glm-4.1v 45 to 60, rethinker-72B 41 to 45, openai 4o/o3 39 to 61, gemini 2.5 flash 69 to 73, claude 4 sonnet 61 to 64." class="figure-img" loading="lazy" width="2400" height="845"></div>
+    <figcaption>
+      <strong>MathLens accuracy (%) on rendered diagrams</strong> for pretrained backbones and models finetuned for multimodal reasoning, in three groups: 7–9B open-weight, 72B open-weight, and closed models. The <a href="#explorer">explorer</a> has every condition.
+    </figcaption>
+  </figure>
+
+  <!-- Finding 1 -->
+  <div class="prose subsection" id="finding-1">
+    <h3>Finding 1 · Text versus diagram input</h3>
+    <p>
+      The text description and the diagram encode identical information for the same question, so comparing the two inputs separates textual reasoning from everything else. Textual SFT raises accuracy mostly on text input (+23.4 and +27.3 points). The multimodal RL stage that follows gains on diagram input (+4.7 and +4.2). Direct multimodal RL without textual SFT gains only modestly on both inputs. Multimodal SFT lowers diagram-input accuracy in both families, and text-input accuracy significantly only for Vision-R1.
+    </p>
+    <div class="finding">
+      <span class="label">Finding 1</span>
+      <p>Gains from multimodal RL vary with textual reasoning strength. After strong textual SFT they appear mainly in perception; without it, they are modest in both modalities.</p>
+    </div>
+  </div>
+
+  <div class="wide">
+    <div class="fig-pair">
+      <figure id="fig-text">
+        <img src="static/figures/new_v2_visual_vs_text-main.png" alt="Accuracy change with 95% confidence intervals for visual and textual input. Direct RL: Rethinker +3.5 visual, +2.3 textual (not significant); ShareVL +4.2 visual, +3.2 textual. Multimodal SFT: R1-OneVision −1.9 visual, −2.2 textual (not significant); Vision-R1 −4.9 visual, −3.7 textual. Then RL: R1-OneVision +1.7 visual, −0.9 textual (not significant); Vision-R1 +10.4 visual, +13.4 textual. Textual SFT: ReVisual +7.9 visual, +23.4 textual; OVR +7.7 visual, +27.3 textual. Then RL: ReVisual +4.7 visual, +1.5 textual (not significant); OVR +4.2 visual, +4.2 textual." class="figure-img" loading="lazy" width="2400" height="2150">
+        <figcaption>
+          <strong>Accuracy change by input modality</strong>, in percentage points with 95% CIs. Top: direct multimodal RL. Middle: multimodal SFT, then multimodal RL. Bottom: textual SFT, then multimodal RL. Bold values with * are significant; light bars are not.
+        </figcaption>
+      </figure>
+      <figure id="fig-perception">
+        <img src="static/figures/new_v4_perception-main.png" alt="Perception-probe accuracy change with 95% confidence intervals. Direct RL: Rethinker +3.7, ShareVL +4.0. Multimodal SFT: R1-OneVision −5.5, Vision-R1 −1.6; then RL: +4.0 and +6.4. Textual SFT: ReVisual +3.2, OVR +5.9; then RL: +6.9 and +2.0. All changes are significant." class="figure-img" loading="lazy" width="2400" height="2268">
+        <figcaption>
+          <strong>Perception-probe accuracy change</strong>, in percentage points with 95% CIs, with panels as on the left. Every RL stage and both textual-SFT stages raise perception-probe accuracy; multimodal SFT lowers it.
+        </figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <!-- Finding 2 -->
+  <div class="prose subsection" id="finding-2">
+    <h3>Finding 2 · Perception and reflection</h3>
+    <p>
+      Perception probes measure low-level recovery of the diagram’s facts. Every multimodal RL checkpoint scores higher on the probes than the stage before it, although RL rewards only correct downstream answers. Textual SFT uses no visual input, yet the textual-SFT checkpoints also do better on the probes (+3.2 and +5.9 points).
+    </p>
+    <p>
+      We hypothesize that one contributing factor is reflection: stronger reasoning lets a model revisit and revise an initial perceptual judgment. We count reflection markers such as “wait” in the reasoning trace. Among probe answers of the two textual-SFT families, reflection is more frequent in answers that became correct after training (false→true) than in answers that were correct before and after (true→true). <a href="#examples">Example 1</a> shows such a trace.
+    </p>
+    <div class="finding">
+      <span class="label">Finding 2</span>
+      <p>Textual-SFT checkpoints perceive better, and the probe answers they newly get right involve more reflective reasoning.</p>
+    </div>
+  </div>
+
+  <figure class="wide figure-band" id="fig-reflection">
+    <img src="static/figures/x_reflection_main.png" alt="Frequency of reflection counts for true-to-true and false-to-true probe answers, for Revisual-R1 (top) and OVR (bottom), at the textual SFT stage (left) and the multimodal RL stage (right). The false-to-true curves sit above the true-to-true curves at higher reflection counts." class="figure-img is-medium" loading="lazy" width="2400" height="1644">
+    <figcaption>
+      <strong>Distribution of reflection counts on perception probes</strong>, for answers correct before and after training (true→true) and answers that became correct (false→true). Rows: Revisual-R1 and OVR. Left: backbone → textual SFT. Right: textual SFT → multimodal RL.
+    </figcaption>
+  </figure>
+
+  <!-- Finding 3 -->
+  <div class="prose subsection" id="finding-3">
+    <h3>Finding 3 · Where the remaining errors go</h3>
+    <p>
+      With the four error types, every wrong answer gets a cause. After RL, perception and reasoning errors fall on the same problems, so the two improve together: most of the reduction is in problems that fail both. Many of the remaining errors are multimodal-specific, and that category grows as the others shrink, e.g. from 9% to 15% of problems for Revisual-R1 and from 9% to 17% for OVR.
+    </p>
+    <div class="finding">
+      <span class="label">Finding 3</span>
+      <p>Perception and reasoning errors fall together, and a growing share of the remaining errors is multimodal-specific once the other components improve.</p>
+    </div>
+  </div>
+
+  <figure class="wide figure-band" id="fig-errors">
+    <img src="static/figures/v5_breakdown-main.png" alt="Stacked bars of error types per model and training stage: perception and reasoning, perception, reasoning, and interaction (multimodal-specific) errors, plus trivial and other correct answers. For Revisual-R1, perception-and-reasoning errors fall from 25% to 13% to 7% while interaction errors rise from 9% to 16% and 15%." class="figure-img is-medium" loading="lazy" width="2400" height="2534">
+    <figcaption>
+      <strong>Distribution of error types per model</strong>, as a share of problems. Most gains come from cases failing in both perception and reasoning. Multimodal-specific errors (“Interaction” in the figure) become more prominent as the other categories improve.
+    </figcaption>
+  </figure>
+
+  <!-- Finding 4 -->
+  <div class="prose subsection" id="finding-4">
+    <h3>Finding 4 · Robustness to diagram changes</h3>
+    <p>
+      Pixel-level perturbations such as blurring often shift predictions because of abnormal appearance rather than semantic change. MathLens instead modifies the geometric specification, so each variant changes the diagram’s structure while keeping the answer. Accuracy on modified diagrams is generally lower than on the base diagrams. To quantify robustness we use the Consistency Rate, the expected agreement of a model’s predictions across variants \(\bar{C}_{k,i}, \bar{C}_{k,j}\) of the same diagram:
+    </p>
+    \[
+      \mathrm{CR} = \mathbb{E}_{Q'_k}\Big[\, \mathbb{E}_{i \neq j}\, \mathbf{1}\big[ M(Q'_k, \bar{C}_{k,i}) = M(Q'_k, \bar{C}_{k,j}) \big] \Big].
+    \]
+    <p>
+      Consistency is higher after multimodal RL and lower after multimodal SFT. Similar downstream accuracy can also hide reliance on visual familiarity: multimodal SFT checkpoints drop on newly rendered diagrams while staying flat on the original curated ones.
+    </p>
+    <div class="finding">
+      <span class="label">Finding 4</span>
+      <p>Multimodal-RL checkpoints are more consistent under structural diagram variations; multimodal-SFT checkpoints are less consistent.</p>
+    </div>
+  </div>
+
+  <figure class="wide figure-band" id="fig-robustness">
+    <div class="fig-scroll"><img src="static/figures/v8_visual_robustness-main.png" alt="Box plots of accuracy on modified diagrams for six 7B model families at each training stage, with markers for base-diagram accuracy and consistency rate. Consistency rises after multimodal RL and falls after multimodal SFT." class="figure-img" loading="lazy" width="2400" height="674"></div>
+    <figcaption>
+      <strong>Robustness to semantic-level visual modifications.</strong> Box plots show accuracy on modified diagrams. Circles mark accuracy on the unmodified base diagrams and diamonds the consistency rate.
+    </figcaption>
+  </figure>
+
+  <figure class="wide" id="fig-ood" style="margin-top:8px">
+    <img src="static/figures/new_v3_diagram_ood-main.png" alt="Accuracy change with 95% confidence intervals for curated versus rendered diagrams. Multimodal SFT: R1-OneVision −3.3 on rendered, +0.8 on curated (not significant); Vision-R1 −6.4 on rendered, −0.3 on curated (not significant)." class="figure-img is-narrow" loading="lazy" width="2400" height="2150">
+    <figcaption>
+      <strong>Accuracy change by diagram type</strong>, in percentage points with 95% CIs: the original curated diagrams versus newly rendered ones. Panels as in the modality figure; light bars are not significant.
+    </figcaption>
+  </figure>
+
+  <!-- Finding 5 -->
+  <div class="prose subsection" id="finding-5">
+    <h3>Finding 5 · Which perception skills change</h3>
+    <p>
+      Split by relation type, the perception probes change unevenly. Relations that depend on simple local geometric primitives (cocircular, parallel, collinear) improve consistently. Same-angle, angle-value, triangle, and quadrilateral probes improve only when textual SFT is combined with multimodal RL. Same-length, length-value, and perpendicular probes remain difficult, likely because their cues are spatially displaced or visually ambiguous.
+    </p>
+    <div class="finding">
+      <span class="label">Finding 5</span>
+      <p>Perception gains are uneven. Skills driven by direct geometric cues improve, while probes that rely on symbolic marks or long-range visual associations show limited gains.</p>
+    </div>
+  </div>
+
+  <figure class="wide figure-band" id="fig-radar">
+    <div class="fig-scroll"><img src="static/figures/v6_perception_radar-main.png" alt="Radar charts of perception-probe accuracy over ten relation types for six 7B model families, comparing the backbone (dotted) with multimodal SFT, textual SFT, and multimodal RL stages." class="figure-img" loading="lazy" width="2400" height="1442"></div>
+    <figcaption>
+      <strong>Perception-probe accuracy by question type.</strong> Each panel compares a family’s training stages with its backbone (dotted).
+    </figcaption>
+  </figure>
+</section>
+
+<!-- ── Explorer ── -->
+<section class="section" id="explorer">
+  <div class="prose">
+    <h2>Explore the full results</h2>
+    <p>
+      Every number here is from the paper’s appendix tables: downstream accuracy under each diagram condition with the consistency rate, and perception-probe accuracy by relation type. <em>Text</em> uses the text description instead of a diagram, <em>Raw</em> the original human-made diagram, <em>Base</em> the newly rendered diagram, and the remaining columns the semantic modifications. Pick a model to compare its training stages.
+    </p>
+  </div>
+
+  <div class="wide">
+    <div class="explorer" id="explorer-widget">
+      <div class="ex-controls">
+        <div data-role="model-pills" class="ex-controls" style="margin:0;gap:10px"></div>
+        <div class="ex-row">
+          <span class="ex-row-label">Metric</span>
+          <div class="seg" data-role="metric" role="group" aria-label="Metric">
+            <button type="button" data-metric="downstream">Downstream accuracy</button>
+            <button type="button" data-metric="perception">Perception probes</button>
+          </div>
+        </div>
+      </div>
+      <div class="ex-meta">
+        <span class="ex-title" data-role="title"></span>
+        <span class="ex-recipe" data-role="recipe"></span>
+      </div>
+      <div class="legend" data-role="legend"></div>
+      <p class="scroll-hint">↔ Swipe the chart and table for all conditions.</p>
+      <div class="chart-scroll">
+        <div class="chart" data-role="chart">
+          <div class="chart-tip" data-role="tip" hidden></div>
+        </div>
+      </div>
+      <div class="table-scroll">
+        <table class="data" data-role="table"></table>
+      </div>
+      <p class="ex-note" data-role="note" hidden></p>
+    </div>
+  </div>
+</section>
+
+<!-- ── Examples ── -->
+<section class="section" id="examples">
+  <div class="prose">
+    <h2>Example responses</h2>
+    <p>Model outputs on MathLens problems and probes, from the paper’s appendix, plus one MathLens-NS sample.</p>
+  </div>
+  <div class="wide">
+    <div class="tabs" role="tablist" aria-label="Examples" data-role="example-tabs">
+      <button type="button" class="tab" role="tab" id="tab-ex1" aria-controls="ex1">1 · Textual SFT recovers a detail</button>
+      <button type="button" class="tab" role="tab" id="tab-ex2" aria-controls="ex2">2 · RL fixes a reasoning error</button>
+      <button type="button" class="tab" role="tab" id="tab-ex3" aria-controls="ex3">3 · Perception probe</button>
+      <button type="button" class="tab" role="tab" id="tab-ex4" aria-controls="ex4">4 · Error persists after RL</button>
+      <button type="button" class="tab" role="tab" id="tab-ex5" aria-controls="ex5">5 · Perception fixed, reasoning fails</button>
+      <button type="button" class="tab" role="tab" id="tab-ex6" aria-controls="ex6">6 · MathLens-NS sample</button>
+    </div>
+    <figure class="example" id="ex1" role="tabpanel" aria-labelledby="tab-ex1">
+      <img src="static/figures/mathlens_ax_sample_changed1.png" alt="Problem: find the length of CD in a right triangle ABC with altitude CD. The backbone Qwen-2.5-VL-7B misreads the side lengths and answers 2√119. The textual-SFT model Revisual-R1-7B first makes the same mistake, then says 'Wait, no', re-reads AD = 24 and DB = 14, and answers 4√21." loading="lazy" width="1440" height="2235">
+      <figcaption>The backbone fails in perception, leading to a wrong answer. The textual-SFT model initially makes the same mistake, then recovers the perceptual detail and answers correctly.</figcaption>
+    </figure>
+    <figure class="example" id="ex2" role="tabpanel" aria-labelledby="tab-ex2" hidden>
+      <img src="static/figures/mathlens_ax_sample_changed2.png" alt="A downstream geometry problem where the backbone model makes a reasoning error and the multimodal RL model gives the correct solution." loading="lazy" width="1440" height="2235">
+      <figcaption>The backbone makes a reasoning error, whereas the multimodal RL model gives the correct solution.</figcaption>
+    </figure>
+    <figure class="example" id="ex3" role="tabpanel" aria-labelledby="tab-ex3" hidden>
+      <img src="static/figures/mathlens_ax_sample_perc1.png" alt="A perception probe where the textual SFT model corrects the perceptual error of the backbone model." loading="lazy" width="1440" height="2235">
+      <figcaption>On a perception probe, the textual-SFT model corrects the perceptual error present in the backbone.</figcaption>
+    </figure>
+    <figure class="example" id="ex4" role="tabpanel" aria-labelledby="tab-ex4" hidden>
+      <img src="static/figures/mathlens_ax_sample_failure1.png" alt="A downstream geometry problem where the multimodal RL model repeats the backbone's flawed reasoning, makes perception errors, and answers incorrectly." loading="lazy" width="1440" height="2235">
+      <figcaption>The multimodal RL model inherits the backbone’s flawed reasoning, which leads to perception errors and a wrong answer.</figcaption>
+    </figure>
+    <figure class="example" id="ex5" role="tabpanel" aria-labelledby="tab-ex5" hidden>
+      <img src="static/figures/mathlens_ax_sample_failure2.png" alt="A downstream geometry problem where the multimodal RL model corrects the backbone's perceptual error but still answers incorrectly because of a reasoning error." loading="lazy" width="1440" height="2235">
+      <figcaption>The multimodal RL model corrects the backbone’s perceptual error but still fails because of a reasoning error.</figcaption>
+    </figure>
+    <figure class="example" id="ex6" role="tabpanel" aria-labelledby="tab-ex6" hidden>
+      <img src="static/figures/mathlens_ax_sample_general1.jpg" alt="A MathLens-NS sample curated from the BLINK dataset, with its annotated text description and perception-centric question-answers." loading="lazy" width="1440" height="2235">
+      <figcaption>A MathLens-NS sample curated from BLINK (Fu et al., 2024), with the annotated text description and perception-centric question-answers.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ── Citation ── -->
+<section class="section" id="citation">
+  <div class="wide">
+    <div class="cite-head">
+      <h2>Citation</h2>
+      <button type="button" class="copy-btn" data-role="copy-bibtex"><svg><use href="#i-copy"/></svg><span>Copy BibTeX</span></button>
+    </div>
+    <pre class="bibtex" id="bibtex-text">@inproceedings{chung2025whatmllms,
+  title={What MLLMs Learn about When they Learn about Multimodal Reasoning},
+  author={Chung, Jiwan and Joshi, Neel and Sharma, Pratyusha and Yu, Youngjae and Vineet, Vibhav},
+  booktitle={Advances in Neural Information Processing Systems: NeurIPS},
+  year={2026}
+}</pre>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wide">
+    <span>Page layout adapted from the <a href="https://github.com/eliahuhorwitz/Academic-project-page-template">Academic Project Page Template</a>.</span>
+    <a href="#">Back to top</a>
+  </div>
+</footer>
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script defer src="page.js"></script>
+<script defer src="explorer.js"></script>
+</body>
+</html>
