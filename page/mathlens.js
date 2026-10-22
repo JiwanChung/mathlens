@@ -168,7 +168,7 @@
       lanes.forEach((l) => {
         const id = l.dataset.lane;
         l.classList.toggle('active', id === lane);
-        l.setAttribute('aria-pressed', String(id === lane));
+        need(l, '.lane-title').setAttribute('aria-pressed', String(id === lane));
         l.querySelectorAll('[data-pass]').forEach((b) => {
           const on = (b.dataset.pass === '1') === pass[id];
           b.classList.toggle('active', on);
@@ -186,10 +186,8 @@
       root.dataset.category = cat;
     }
     lanes.forEach((l) => {
+      // Clicks anywhere on the card (including its title button, which carries keyboard focus) select the test.
       l.addEventListener('click', () => { lane = l.dataset.lane; render(); });
-      l.addEventListener('keydown', (e) => {
-        if (e.target === l && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); lane = l.dataset.lane; render(); }
-      });
       l.querySelectorAll('[data-pass]').forEach((b) => b.addEventListener('click', () => {
         pass[l.dataset.lane] = b.dataset.pass === '1';
       }));

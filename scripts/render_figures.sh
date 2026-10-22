@@ -8,7 +8,7 @@ out="$(dirname "$0")/../page/static/figures"
 mkdir -p "$out"
 
 # Main-body figures: 2400 px wide.
-for f in fixed_fig1 mathlens_main2 fixed_fig3 1_base new_v2_visual_vs_text-main \
+for f in fixed_fig1 1_base new_v2_visual_vs_text-main \
          new_v4_perception-main x_reflection_main v5_breakdown-main \
          v8_visual_robustness-main new_v3_diagram_ood-main v6_perception_radar-main; do
   pdftoppm -png -singlefile -scale-to-x 2400 -scale-to-y -1 "$pics/$f.pdf" "$out/$f"
