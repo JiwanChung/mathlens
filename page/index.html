@@ -108,11 +108,11 @@
   <div class="container bit-narrow">
     <h2 class="section-title">MathLens</h2>
     <p class="section-lead">
-      Aggregate accuracy obscures whether errors stem from perception, reasoning, or their interaction. MathLens probes these components separately.
+      Benchmarks usually report a single accuracy score, which does not show whether a wrong answer comes from misreading the diagram or from faulty reasoning. MathLens is built to separate the two.
     </p>
 
-    <h3 class="subsection-title">Separate tests attribute errors to perception or reasoning</h3>
-    <p class="subsection-lead">Probes test perception; a text description in place of the diagram tests reasoning. Failures when both pass are multimodal-specific.</p>
+    <h3 class="subsection-title">Testing perception and reasoning separately</h3>
+    <p class="subsection-lead">Alongside each problem, we ask simple questions about what the diagram shows, which checks perception, and we give the model a written description in place of the diagram, which checks reasoning. If the model passes both but still fails the original problem, the error comes from combining the two; we call it multimodal-specific.</p>
     <div class="demo" data-role="decomp">
       <div class="decomp-grid">
         <div class="decomp-view">
@@ -179,8 +179,8 @@
       </div>
     </div>
 
-    <h3 class="subsection-title">One symbolic specification generates every test</h3>
-    <p class="subsection-lead">Diagram, text, question, and probes share the same facts, keeping measurement controlled.</p>
+    <h3 class="subsection-title">Building every version of a problem from the same facts</h3>
+    <p class="subsection-lead">Each problem is written down as a list of geometric facts. The diagram, the written description, the question, and the perception questions are all generated from this list, so every test asks about exactly the same information.</p>
     <div class="demo" data-role="gen">
       <div class="gen-wrap">
         <div class="gen-state">
@@ -216,11 +216,11 @@
           </div>
         </div>
       </div>
-      <p class="demo-note">Questions omit facts shown in the diagram, and diagrams are newly rendered to avoid visual familiarity.</p>
+      <p class="demo-note">The question leaves out facts that the diagram already shows, so it cannot be answered without looking at the diagram. Diagrams are redrawn so that models cannot rely on having seen the original.</p>
     </div>
 
-    <h3 class="subsection-title">Semantic modifications test robustness</h3>
-    <p class="subsection-lead">Unlike pixel noise, they change the diagram but not the answer; robustness is agreement across variants.</p>
+    <h3 class="subsection-title">Changing the diagram without changing the answer</h3>
+    <p class="subsection-lead">To test robustness, we edit the underlying facts rather than adding pixel noise, for example by adding lines or shapes, flipping, rotating, or relabeling points. The correct answer stays the same, so a robust model should give the same answer for every version.</p>
     <div class="demo" data-role="mods">
       <div class="seg mods-seg" role="group" aria-label="Diagram modification">
         <button type="button" data-mod="original">Original</button>
