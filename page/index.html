@@ -108,7 +108,7 @@
   <div class="container bit-narrow">
     <h2 class="section-title">MathLens</h2>
     <p class="section-lead">
-      926 geometry problems, each with a text-only version, eight diagram versions, and 7.03 perception probes on average.
+      A wrong answer on a diagram problem doesn't tell you whether the model misread the diagram or failed to reason. MathLens pairs each geometry problem with tests that separate the two.
     </p>
     <div class="figure-block">
       <a href="static/figures/mathlens_main2.png" target="_blank" rel="noopener"><img src="static/figures/mathlens_main2.png" alt="A geometry problem tested four ways: the multimodal reasoning test, a perception test with two-option probes, a reasoning test with a complete text description in place of the diagram, and the integration case where perception and reasoning succeed but multimodal reasoning fails" class="figure-img" loading="lazy" width="2400" height="704"></a>
@@ -119,7 +119,7 @@
     <div class="figure-block">
       <a href="static/figures/fixed_fig3.png" target="_blank" rel="noopener"><img src="static/figures/fixed_fig3.png" alt="Semantic state as predicates, the question, the text description, perception probes, and the diagram rendered from the predicates next to the existing diagram" class="figure-img" loading="lazy" width="2400" height="825"></a>
       <p class="figure-caption">
-        <strong>Built from a symbolic state.</strong> Text descriptions, probes, and questions come from FormalGeo-7K predicates; diagrams are re-rendered from them. MathLens-NS adds 107 problems from other domains.
+        <strong>Built from a symbolic state.</strong> Text descriptions, probes, and questions come from FormalGeo-7K predicates; diagrams are re-rendered from them.
       </p>
     </div>
   </div>
@@ -131,7 +131,7 @@
 <section class="results-section" id="analysis">
   <div class="container bit-narrow">
     <h2 class="section-title">Analysis</h2>
-    <p class="section-lead">Six released 7B reasoning models against their shared backbone, Qwen2.5-VL-7B. Error bars are paired-bootstrap 95% CIs.</p>
+    <p class="section-lead">Six released 7B reasoning models, each compared with the Qwen2.5-VL-7B backbone it was trained from. Error bars are paired-bootstrap 95% CIs.</p>
     <table class="leaderboard recipes">
       <thead><tr><th>Recipe</th><th>Models</th></tr></thead>
       <tbody>
@@ -144,7 +144,7 @@
     <article class="finding" id="finding-1">
       <p class="finding-label">Finding 1</p>
       <h3 class="finding-title">Multimodal RL gains vary with textual reasoning strength</h3>
-      <p class="finding-text">Textual SFT adds <strong>+23.4</strong> and <strong>+27.3</strong> points on text input. Multimodal RL after it adds <strong>+4.7</strong> and <strong>+4.2</strong> on diagrams. Direct multimodal RL gains are modest in both.</p>
+      <p class="finding-text">Textual SFT lifts Revisual-R1 and OVR by <strong>23–27 points</strong> on text input. The multimodal RL stage that follows then gains <strong>4–5 points</strong> on diagram input. Direct multimodal RL gains are modest in both.</p>
       <div class="figure-block">
         <a href="static/figures/new_v2_visual_vs_text-main.png" target="_blank" rel="noopener"><img src="static/figures/new_v2_visual_vs_text-main.png" alt="Accuracy change with 95% confidence intervals for visual and textual input, for direct RL, multimodal SFT then RL, and textual SFT then RL" class="figure-img figure-img-half" loading="lazy" width="2400" height="2150"></a>
         <p class="figure-caption caption-half">Accuracy change (points) on text vs. diagram input. Light bars: not significant.</p>
@@ -154,7 +154,7 @@
     <article class="finding" id="finding-2">
       <p class="finding-label">Finding 2</p>
       <h3 class="finding-title">Perception improves after textual SFT, which uses no images</h3>
-      <p class="finding-text">Probe accuracy rises after textual SFT (<strong>+3.2</strong>, <strong>+5.9</strong>) and after every multimodal RL stage, and falls after multimodal SFT. Probe answers that turn correct contain more reflection.</p>
+      <p class="finding-text">Textual SFT trains on no images, yet raises perception-probe accuracy by <strong>3–6 points</strong>. Every multimodal RL stage raises it too; multimodal SFT lowers it. Probe answers that turn correct contain more reflection than ones that were already correct.</p>
       <div class="figure-pair">
         <div class="figure-block">
           <a href="static/figures/new_v4_perception-main.png" target="_blank" rel="noopener"><img src="static/figures/new_v4_perception-main.png" alt="Perception-probe accuracy change with 95% confidence intervals for each training stage" class="figure-img" loading="lazy" width="2400" height="2268"></a>
@@ -170,7 +170,7 @@
     <article class="finding" id="finding-3">
       <p class="finding-label">Finding 3</p>
       <h3 class="finding-title">Perception and reasoning errors fall together; multimodal-specific errors grow</h3>
-      <p class="finding-text">After textual SFT → RL, errors failing both isolated tests drop from <strong>25%</strong> to <strong>7%</strong>; multimodal-specific errors rise from <strong>9%</strong> to <strong>15–17%</strong>.</p>
+      <p class="finding-text">For Revisual-R1 and OVR, the share of answers failing both isolated tests drops from <strong>25%</strong> to <strong>7%</strong>. The share failing only the full problem (multimodal-specific) rises from <strong>9%</strong> to <strong>15–17%</strong>.</p>
       <div class="figure-block">
         <a href="static/figures/v5_breakdown-main.png" target="_blank" rel="noopener"><img src="static/figures/v5_breakdown-main.png" alt="Stacked bars of error types per model and training stage" class="figure-img figure-img-medium" loading="lazy" width="2400" height="2534"></a>
         <p class="figure-caption caption-half">Answers by error type. “Interaction” is the multimodal-specific category.</p>
@@ -180,7 +180,7 @@
     <article class="finding" id="finding-4">
       <p class="finding-label">Finding 4</p>
       <h3 class="finding-title">Multimodal RL checkpoints answer more consistently across diagram variants</h3>
-      <p class="finding-text">Every multimodal RL stage raises consistency over its starting checkpoint (Vision-R1: <strong>21.1 → 39.4</strong>). Multimodal SFT lowers it (<strong>31.0 → 24.0</strong>, <strong>21.1</strong>) and drops on newly rendered diagrams.</p>
+      <p class="finding-text">Consistency, how often a model gives the same answer across variants of one diagram, rises after every multimodal RL stage (Vision-R1: <strong>21% → 39%</strong>). Multimodal SFT lowers it and loses accuracy on newly rendered diagrams.</p>
       <div class="figure-block">
         <a href="static/figures/v8_visual_robustness-main.png" target="_blank" rel="noopener"><img src="static/figures/v8_visual_robustness-main.png" alt="Box plots of accuracy on modified diagrams with base accuracy and consistency rate markers" class="figure-img" loading="lazy" width="2400" height="674"></a>
         <p class="figure-caption caption-half">Boxes: accuracy on modified diagrams. ○ accuracy on base diagrams. ◇ consistency rate (agreement across variants of one diagram).</p>
