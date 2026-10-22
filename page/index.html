@@ -110,18 +110,55 @@
     <p class="section-lead">
       Most multimodal reasoning benchmarks report only aggregate accuracy, obscuring whether errors stem from perception (extracting information from inputs), reasoning (operating on extracted information), or their interaction. MathLens is designed to separately probe these components while preserving realistic problem contexts.
     </p>
+
+    <h3 class="subsection-title">Isolating components</h3>
+    <p class="method-text">
+      Each problem is specified by a semantic state, a set of atomic facts such as <span class="nowrap">∠ABC = 50°</span>. Having access to the semantic state allows us to design tests that separately probe perception, reasoning, and multimodal-specific behaviors.
+    </p>
     <div class="figure-block">
       <a href="static/figures/mathlens_main2.png" target="_blank" rel="noopener"><img src="static/figures/mathlens_main2.png" alt="The joint Multimodal Reasoning Test decomposed into a Perception Test and a textual Reasoning Test" class="figure-img" loading="lazy" width="2400" height="704"></a>
       <p class="figure-caption">
-        Based on MathLens annotations, the joint <em>Multimodal Reasoning Test</em> (1) is decomposed into a Perception Test and a textual Reasoning Test. The <em>Perception Test</em> evaluates questions answerable directly from the diagram, such as reading an annotated angle (e.g., ∠DFB in (2)). The <em>Reasoning Test</em> (3) replaces the diagram with a complete textual description, such that the question can be solved without visual access. Finally, the <em>Multimodal-specific</em> category (4) highlights cases where multimodal reasoning fails even though perception and reasoning, when tested independently, succeed.
+        Based on MathLens annotations, the joint <em>Multimodal Reasoning Test</em> (1) is decomposed into a Perception Test (2) and a textual Reasoning Test (3).
       </p>
     </div>
+    <p class="method-text">
+      <strong>Perception (2).</strong> Probe questions are derived from the atomic facts listed in the semantic state. These probes check if the model can recover the specific facts that are needed to solve the problem from the given input. Errors here indicate perceptual failures.
+    </p>
+    <p class="method-text">
+      <strong>Reasoning (3).</strong> Given the semantic state, we render a textual description that directly encodes the relevant details. Evaluating on the description trivializes perception, so the task reduces to applying the query correctly. Errors here isolate reasoning competence, free from perceptual confounds.
+    </p>
+    <p class="method-text">
+      <strong>Multimodal-specific (4).</strong> Conditional on success in perception probes and text-only reasoning, any remaining errors on the full task are treated as multimodal-specific residuals. We refer to this category as “integration” interchangeably for brevity.
+    </p>
+
+    <h3 class="subsection-title">Data generation</h3>
+    <p class="method-text">
+      Each instance is first specified symbolically, then rendered into its observable forms: diagrams, textual descriptions, and multiple types of questions.
+    </p>
     <div class="figure-block">
       <a href="static/figures/fixed_fig3.png" target="_blank" rel="noopener"><img src="static/figures/fixed_fig3.png" alt="Sample data generation process in MathLens" class="figure-img" loading="lazy" width="2400" height="825"></a>
       <p class="figure-caption">
-        <strong>Sample data generation process in MathLens.</strong> From a <em>semantic state</em> representation, we build controlled <em>text descriptions</em>, <em>perception probes</em>, and <em>questions</em> with no overlap with visual content. Also, new <em>diagrams</em> are rendered from the semantic state to avoid visual familiarity effects.
+        <strong>Sample data generation process in MathLens.</strong>
       </p>
     </div>
+    <p class="method-text">
+      <strong>Data source (a).</strong> We build on FormalGeo-7K, which provides symbolic annotations for geometry problems. Each diagram cue or condition is encoded as a predicate (e.g., <span class="pred">Collinear</span>(AB, BC), <span class="pred">EqualLength</span>(AB, CD)), forming the semantic state.
+    </p>
+    <p class="method-text">
+      <strong>Questions (b).</strong> For a strictly multimodal question, we drop clauses overlapping with the context. Thus the question requires contextual information to solve.
+    </p>
+    <p class="method-text">
+      <strong>Textual descriptions (c).</strong> Each detail is mapped by a template to a clause, yielding a faithful textual rendering of the formal representation without stylistic variation (e.g., <span class="pred">EqualLength</span>(AB, CD) → “Segment AB is equal in length to segment CD”).
+    </p>
+    <p class="method-text">
+      <strong>Perception probes (d).</strong> Each atomic detail is converted to a probe via templating. For example, <span class="pred">Collinear</span>(AB, BC) yields “Which points are collinear? A. ABC B. ABD” with answer A and negative B.
+    </p>
+    <p class="method-text">
+      <strong>Diagram rendering (e).</strong> Each clause is converted into geometric constraints. A numerical solver computes coordinates that satisfy all constraints, which are then rendered into diagrams. We then manually filter outputs to remove artifacts such as occlusions or overlaps.
+    </p>
+    <p class="method-text">
+      <strong>Diagram modifications.</strong> To test visual robustness, we generate diagram variants by altering the semantic state, including adding auxiliary elements, applying flips or rotations, merging instances, and relabeling points, while preserving the ground-truth answer. All variants are manually screened.
+    </p>
   </div>
 </section>
 
