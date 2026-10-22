@@ -55,7 +55,7 @@
     <div class="figure-block">
       <a href="static/figures/fixed_fig1.png" target="_blank" rel="noopener"><img src="static/figures/fixed_fig1.png" alt="Downstream error rate of a backbone MLLM and of models after direct RL, multimodal SFT, multimodal SFT plus RL, textual SFT, and textual SFT plus RL, decomposed into reasoning, joint, perception, and integration error rates" class="figure-img" width="2400" height="631"></a>
       <p class="teaser-tldr">
-        <strong>MathLens</strong> splits multimodal reasoning errors into <strong>perception</strong>, <strong>reasoning</strong>, and a <strong>multimodal-specific</strong> residual (“Integration”), exposing shifts after finetuning that aggregate accuracy hides.
+        MathLens decomposes multimodal reasoning errors into perception, reasoning, and a residual multimodal-specific category (“Integration”), revealing component-specific shifts after finetuning that are hidden by aggregate accuracy.
       </p>
     </div>
   </div>
@@ -74,7 +74,7 @@
       <a class="finding-card" href="#finding-2">
         <div class="finding-number">2</div>
         <h3>Textual SFT checkpoints perceive better</h3>
-        <p>No images in training, yet perception-probe accuracy rises.</p>
+        <p>Perception-probe accuracy rises after textual SFT, which uses no images.</p>
       </a>
       <a class="finding-card" href="#finding-3">
         <div class="finding-number">3</div>
@@ -108,18 +108,18 @@
   <div class="container bit-narrow">
     <h2 class="section-title">MathLens</h2>
     <p class="section-lead">
-      A wrong answer on a diagram problem doesn't tell you whether the model misread the diagram or failed to reason. MathLens pairs each geometry problem with tests that separate the two.
+      Aggregate accuracy does not show whether an error comes from perception or from reasoning. MathLens annotates each geometry problem with tests that measure the two separately.
     </p>
     <div class="figure-block">
       <a href="static/figures/mathlens_main2.png" target="_blank" rel="noopener"><img src="static/figures/mathlens_main2.png" alt="A geometry problem tested four ways: the multimodal reasoning test, a perception test with two-option probes, a reasoning test with a complete text description in place of the diagram, and the integration case where perception and reasoning succeed but multimodal reasoning fails" class="figure-img" loading="lazy" width="2400" height="704"></a>
       <p class="figure-caption">
-        <strong>One problem, three tests.</strong> Perception: two-option probes on facts in the diagram. Reasoning: the diagram replaced by a complete text description. Multimodal-specific: the full problem fails although both isolated tests pass.
+        The multimodal reasoning test (1) is decomposed into a perception test (2), two-option probes on facts in the diagram, and a reasoning test (3), where a complete text description replaces the diagram. Multimodal-specific errors (4) are failures on (1) when (2) and (3) succeed.
       </p>
     </div>
     <div class="figure-block">
       <a href="static/figures/fixed_fig3.png" target="_blank" rel="noopener"><img src="static/figures/fixed_fig3.png" alt="Semantic state as predicates, the question, the text description, perception probes, and the diagram rendered from the predicates next to the existing diagram" class="figure-img" loading="lazy" width="2400" height="825"></a>
       <p class="figure-caption">
-        <strong>Built from a symbolic state.</strong> Text descriptions, probes, and questions come from FormalGeo-7K predicates; diagrams are re-rendered from them.
+        Text descriptions, perception probes, and questions are generated from the FormalGeo-7K predicates of each problem, and new diagrams are rendered from the same predicates.
       </p>
     </div>
   </div>
@@ -154,7 +154,7 @@
     <article class="finding" id="finding-2">
       <p class="finding-label">Finding 2</p>
       <h3 class="finding-title">Perception improves after textual SFT, which uses no images</h3>
-      <p class="finding-text">Textual SFT trains on no images, yet raises perception-probe accuracy by <strong>3–6 points</strong>. Every multimodal RL stage raises it too; multimodal SFT lowers it. Probe answers that turn correct contain more reflection than ones that were already correct.</p>
+      <p class="finding-text">Textual SFT, which uses no images, raises perception-probe accuracy by <strong>3–6 points</strong>. Every multimodal RL stage raises it too; multimodal SFT lowers it. Probe answers that turn correct contain more reflection than ones that were already correct.</p>
       <div class="figure-pair">
         <div class="figure-block">
           <a href="static/figures/new_v4_perception-main.png" target="_blank" rel="noopener"><img src="static/figures/new_v4_perception-main.png" alt="Perception-probe accuracy change with 95% confidence intervals for each training stage" class="figure-img" loading="lazy" width="2400" height="2268"></a>
