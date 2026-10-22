@@ -73,13 +73,13 @@
       </a>
       <a class="finding-card" href="#finding-2">
         <div class="finding-number">2</div>
-        <h3>Textual SFT improves perception</h3>
+        <h3>Textual SFT improves perception partially through reflective reasoning</h3>
         <p>Textual SFT does not use visual inputs, yet it enhances perceptual performance.</p>
       </a>
       <a class="finding-card" href="#finding-3">
         <div class="finding-number">3</div>
         <h3>RL improves perception and reasoning in a correlated manner</h3>
-        <p>Residual errors are increasingly categorized as multimodal-specific once the other components improve.</p>
+        <p>It causes residual errors to be increasingly categorized as multimodal-specific once the other components improve.</p>
       </a>
       <a class="finding-card" href="#finding-4">
         <div class="finding-number">4</div>
@@ -95,7 +95,7 @@
     <details class="abstract-details">
       <summary>Abstract</summary>
       <p class="abstract-lead">
-        Evaluation of multimodal reasoning models is typically reduced to a single accuracy score, implicitly treating reasoning as a unitary capability. We introduce <strong>MathLens</strong>, a benchmark of textbook-style geometry problems that exposes this assumption by operationally decomposing performance into perception, reasoning, and multimodal-specific components. Each problem is derived from a symbolic specification and accompanied by visual diagrams, text-only variants, multimodal questions, and targeted perceptual probes, enabling controlled measurement of each component. Using this decomposition, we show that models trained with common strategies exhibit systematically different capability profiles that are invisible under aggregate accuracy. Models trained with reinforcement learning gain primarily in perceptual grounding and in robustness to diagram variation, while gains after textual SFT coincide with more reflective reasoning. In contrast, as perception and reasoning improve, a growing fraction of remaining errors fall outside these components and are categorized as multimodal-specific. These results suggest that apparent progress in multimodal reasoning reflects shifting balances among subskills rather than uniform advancement, motivating evaluation beyond scalar accuracy.
+        Evaluation of multimodal reasoning models is typically reduced to a single accuracy score, implicitly treating reasoning as a unitary capability. We introduce <strong>MathLens</strong>, a benchmark of textbook-style geometry problems that exposes this assumption by operationally decomposing performance into perception, reasoning, and multimodal-specific components. Each problem is derived from a symbolic specification and accompanied by visual diagrams, text-only variants, multimodal questions, and targeted perceptual probes, enabling controlled measurement of each component. Using this decomposition, we show that common training strategies induce systematically different capability profiles that are invisible under aggregate accuracy. Reinforcement learning primarily improves perceptual grounding and robustness to diagram variation, while textual SFT yields gains through reflective reasoning. In contrast, as perception and reasoning improve, a growing fraction of remaining errors fall outside these components and are categorized as multimodal-specific. These results suggest that apparent progress in multimodal reasoning reflects shifting balances among subskills rather than uniform advancement, motivating evaluation beyond scalar accuracy.
       </p>
     </details>
   </div>
@@ -143,8 +143,8 @@
 
     <article class="finding" id="finding-2">
       <p class="finding-label">Finding 2</p>
-      <h3 class="finding-title">Textual SFT improves perception</h3>
-      <p class="finding-text">Textual SFT does not use visual inputs, yet it enhances perceptual performance. We examined the reasoning traces of two models with textual SFT: reflective reasoning was more frequent in predictions that became accurate only after training (false→true) than in those accurate both before and after training (true→true).</p>
+      <h3 class="finding-title">Textual SFT improves perception partially through reflective reasoning</h3>
+      <p class="finding-text">Textual SFT does not use visual inputs, yet it enhances perceptual performance. We examined the reasoning traces of two models with textual SFT: reflective reasoning was more frequent in predictions that became accurate only after training (false→true) than in those accurate both before and after training (true→true). These results indicate that textual SFT promotes reflective reasoning, which enables models to revisit and correct initial perceptual errors.</p>
       <div class="figure-pair">
         <div class="figure-block">
           <a href="static/figures/new_v4_perception-main.png" target="_blank" rel="noopener"><img src="static/figures/new_v4_perception-main.png" alt="Perception performance shifts from finetuning" class="figure-img" loading="lazy" width="2400" height="2268"></a>
@@ -152,7 +152,7 @@
         </div>
         <div class="figure-block">
           <a href="static/figures/x_reflection_main.png" target="_blank" rel="noopener"><img src="static/figures/x_reflection_main.png" alt="Sample distribution over reflection count" class="figure-img" loading="lazy" width="2400" height="1644"></a>
-          <p class="figure-caption"><strong>Sample distribution over reflection count.</strong> Reflection is more frequent in false→true cases than in true→true cases.</p>
+          <p class="figure-caption"><strong>Sample distribution over reflection count.</strong> Reflection is more frequent in false→true cases than in true→true cases, showing that perception gains from textual SFT arise partially from reflective reasoning.</p>
         </div>
       </div>
     </article>
@@ -160,7 +160,7 @@
     <article class="finding" id="finding-3">
       <p class="finding-label">Finding 3</p>
       <h3 class="finding-title">RL improves perception and reasoning in a correlated manner</h3>
-      <p class="finding-text">Residual errors are increasingly categorized as multimodal-specific once the other components improve.</p>
+      <p class="finding-text">RL primarily reduces perception and reasoning errors on the same problems, indicating correlated gains. Yet many of the reductions manifest as multimodal-specific residuals, suggesting that finetuning often shifts them into coordination failures rather than eliminating them outright.</p>
       <div class="figure-block">
         <a href="static/figures/v5_breakdown-main.png" target="_blank" rel="noopener"><img src="static/figures/v5_breakdown-main.png" alt="Distribution of error types per model" class="figure-img figure-img-medium" loading="lazy" width="2400" height="2534"></a>
         <p class="figure-caption"><strong>Distribution of error types per model.</strong> Most gains come from cases failing in both perception and reasoning. Multimodal-specific residual errors become more prominent as the other categories improve.</p>
