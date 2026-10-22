@@ -112,73 +112,70 @@
     </p>
 
     <h3 class="subsection-title">Isolating components</h3>
-    <div class="demo" data-role="tests">
-      <div class="seg demo-seg" role="tablist" aria-label="Tests">
-        <button type="button" role="tab" data-test="mm">(1) Multimodal Reasoning Test</button>
-        <button type="button" role="tab" data-test="perc">(2) Perception Test</button>
-        <button type="button" role="tab" data-test="reas">(3) Reasoning Test</button>
-      </div>
-      <div class="tests-body">
-        <div class="tests-input">
-          <div data-test-panel="mm perc">
+    <div class="demo" data-role="decomp">
+      <div class="decomp-grid">
+        <div class="decomp-view">
+          <div data-lane-view="mm perc">
             <div class="io-label">Diagram</div>
-            <svg class="dg" data-role="tests-diagram" role="img" aria-label="Geometry diagram with points A, B, C, D, F, G, I and angles 47°, 112°, 65°"></svg>
+            <svg class="dg" data-role="decomp-diagram" role="img" aria-label="Geometry diagram with points A, B, C, D, F, G, I and angles 47°, 112°, 65°"></svg>
           </div>
-          <div data-test-panel="reas" hidden>
+          <div data-lane-view="reas" hidden>
             <div class="io-label">Text description</div>
-            <p class="tests-text">There are triangle BDF, triangle FIA, line BG, line CI. GBFI are collinear. AFD are collinear. AIC are collinear. ∠BDF=47°. ∠CIF=112°. ∠DFB=65°.</p>
+            <p class="view-text">There are triangle BDF, triangle FIA, line BG, line CI. GBFI are collinear. AFD are collinear. AIC are collinear. ∠BDF=47°. ∠CIF=112°. ∠DFB=65°.</p>
           </div>
-          <div class="tests-q" data-test-panel="mm reas">
+          <div class="view-q" data-lane-view="mm reas">
             <div class="io-label">Question</div>
-            <p class="tests-text">Find measure of angle IAF.</p>
+            <p class="view-text">Find measure of angle IAF.</p>
           </div>
-          <div class="tests-q" data-test-panel="perc" hidden>
+          <div class="view-q" data-lane-view="perc" hidden>
             <div class="io-label">Perception probes</div>
             <button type="button" class="probe active" data-probe="ang-DFB" data-answer="A. DFB">Which angle has measure 65? A. DFB B. DBF</button>
             <button type="button" class="probe" data-probe="col-AFD" data-answer="B. AFD">Which is collinear? A. ABD B. AFD</button>
           </div>
+          <p class="view-note" data-lane-view="perc" hidden>The Perception Test evaluates questions answerable directly from the diagram, such as reading an annotated angle.</p>
+          <p class="view-note" data-lane-view="reas" hidden>The Reasoning Test replaces the diagram with a complete textual description, such that the question can be solved without visual access.</p>
         </div>
-        <div class="tests-model" aria-hidden="true">
-          <span class="mllm">MLLM</span>
-          <svg class="flow-arrow" viewBox="0 0 64 12"><path d="M1 6 H60 M53 1 L61 6 L53 11"/></svg>
-        </div>
-        <div class="tests-output">
-          <div class="io-label">Answer</div>
-          <div class="answer-value" data-role="tests-answer">47</div>
+        <div class="decomp-side">
+          <div class="lane" data-lane="mm" role="button" tabindex="0">
+            <div class="lane-title">(1) Multimodal Reasoning Test</div>
+            <div class="lane-io">Diagram + question <span class="arrow">→</span> <span class="lane-answer">47</span></div>
+            <div class="lane-out" role="group" aria-label="Outcome of (1)"><button type="button" data-pass="1">✓ Correct</button><button type="button" data-pass="0">✗ Wrong</button></div>
+          </div>
+          <div class="lane" data-lane="perc" role="button" tabindex="0">
+            <div class="lane-title">(2) Perception Test</div>
+            <div class="lane-io">Diagram + probe <span class="arrow">→</span> <span class="lane-answer" data-role="probe-answer">A. DFB</span></div>
+            <div class="lane-out" role="group" aria-label="Outcome of (2)"><button type="button" data-pass="1">✓ Correct</button><button type="button" data-pass="0">✗ Wrong</button></div>
+          </div>
+          <div class="lane" data-lane="reas" role="button" tabindex="0">
+            <div class="lane-title">(3) Reasoning Test</div>
+            <div class="lane-io">Text description + question <span class="arrow">→</span> <span class="lane-answer">47</span></div>
+            <div class="lane-out" role="group" aria-label="Outcome of (3)"><button type="button" data-pass="1">✓ Correct</button><button type="button" data-pass="0">✗ Wrong</button></div>
+          </div>
         </div>
       </div>
-      <p class="demo-note" data-test-panel="perc" hidden>The Perception Test evaluates questions answerable directly from the diagram, such as reading an annotated angle.</p>
-      <p class="demo-note" data-test-panel="reas" hidden>The Reasoning Test replaces the diagram with a complete textual description, such that the question can be solved without visual access.</p>
-    </div>
-
-    <div class="demo" data-role="errors">
-      <div class="err-wrap">
-        <div class="err-toggles">
-          <div class="io-label">Outcome on each test</div>
-          <button type="button" class="err-toggle t-perc" data-outcome="perc"><span>(2) Perception Test</span><span class="state"></span></button>
-          <button type="button" class="err-toggle t-reas" data-outcome="reas"><span>(3) Reasoning Test</span><span class="state"></span></button>
-          <button type="button" class="err-toggle t-mm" data-outcome="mm"><span>(1) Multimodal Reasoning Test</span><span class="state"></span></button>
-        </div>
-        <div class="err-grid-wrap">
+      <div class="diag">
+        <div>
           <div class="io-label">Error type when (1) is wrong</div>
           <div class="err-grid">
             <div></div>
-            <div class="err-head">(3) Reasoning ✓</div>
-            <div class="err-head">(3) Reasoning ✗</div>
-            <div class="err-head err-row">(2) Perception ✓</div>
+            <div class="err-head">(3) ✓</div>
+            <div class="err-head">(3) ✗</div>
+            <div class="err-head err-row">(2) ✓</div>
             <div class="err-cell c-mm" data-category="mm">Multimodal-specific</div>
             <div class="err-cell c-r" data-category="r">Reasoning</div>
-            <div class="err-head err-row">(2) Perception ✗</div>
+            <div class="err-head err-row">(2) ✗</div>
             <div class="err-cell c-p" data-category="p">Perception</div>
             <div class="err-cell c-pr" data-category="pr">Perception &amp; Reasoning</div>
           </div>
         </div>
+        <div class="diag-notes">
+          <p class="diag-note" data-result="mm"><strong>Multimodal-specific:</strong> correct perception and text in isolation but failure on the combined multimodal task. Figures label it “Integration” or “Interaction”.</p>
+          <p class="diag-note" data-result="r" hidden><strong>Reasoning:</strong> correct perception probes but failed text-based reasoning.</p>
+          <p class="diag-note" data-result="p" hidden><strong>Perception:</strong> failure on perception probes but correct reasoning from text.</p>
+          <p class="diag-note" data-result="pr" hidden><strong>Perception &amp; Reasoning:</strong> failures on both perception probes and textual reasoning.</p>
+          <p class="diag-note" data-result="correct" hidden><strong>Correct:</strong> counted as Trivial (solvable from text alone) or Rest (all other correct cases).</p>
+        </div>
       </div>
-      <p class="demo-note" data-result="mm"><strong>Multimodal-specific:</strong> correct perception and text in isolation but failure on the combined multimodal task. Figures label it “Integration” or “Interaction”.</p>
-      <p class="demo-note" data-result="r" hidden><strong>Reasoning:</strong> correct perception probes but failed text-based reasoning.</p>
-      <p class="demo-note" data-result="p" hidden><strong>Perception:</strong> failure on perception probes but correct reasoning from text.</p>
-      <p class="demo-note" data-result="pr" hidden><strong>Perception &amp; Reasoning:</strong> failures on both perception probes and textual reasoning.</p>
-      <p class="demo-note" data-result="correct" hidden><strong>Correct:</strong> counted as Trivial (solvable from text alone) or Rest (all other correct cases).</p>
     </div>
 
     <h3 class="subsection-title">Data generation</h3>

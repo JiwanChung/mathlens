@@ -144,64 +144,57 @@
     });
   }
 
-  // (1)-(3): what the model sees in each test.
-  function initTests() {
-    const root = need(document, '[data-role=tests]');
-    const svg = need(root, '[data-role=tests-diagram]');
+  // (1)-(3) side by side: pick a test to see its input, set each outcome to see the error type.
+  const CATEGORIES = { 'P0R0': 'pr', 'P0R1': 'p', 'P1R0': 'r', 'P1R1': 'mm' };
+  function initDecomposition() {
+    const root = need(document, '[data-role=decomp]');
+    const svg = need(root, '[data-role=decomp-diagram]');
     renderDiagram(svg, { mode: 'original', rename: false, extraLine: false, extraShape: false });
-    const tabs = [...root.querySelectorAll('[data-test]')];
-    const panels = [...root.querySelectorAll('[data-test-panel]')];
-    const answer = need(root, '[data-role=tests-answer]');
+    const lanes = [...root.querySelectorAll('[data-lane]')];
+    const views = [...root.querySelectorAll('[data-lane-view]')];
     const probes = [...root.querySelectorAll('[data-probe]')];
-    if (tabs.length !== 3 || panels.length === 0 || probes.length === 0) throw new Error('tests demo is incomplete');
-
-    function selectProbe(p) {
-      probes.forEach((q) => q.classList.toggle('active', q === p));
-      highlight(svg, p.dataset.probe);
-      answer.textContent = p.dataset.answer;
-    }
-    function selectTest(test) {
-      tabs.forEach((b) => {
-        const on = b.dataset.test === test;
-        b.classList.toggle('active', on);
-        b.setAttribute('aria-selected', String(on));
-      });
-      panels.forEach((p) => { p.hidden = !p.dataset.testPanel.split(' ').includes(test); });
-      root.dataset.test = test;
-      if (test === 'perc') selectProbe(probes.find((p) => p.classList.contains('active')) || probes[0]);
-      else { highlight(svg, null); answer.textContent = '47'; }
-    }
-    tabs.forEach((b) => b.addEventListener('click', () => selectTest(b.dataset.test)));
-    probes.forEach((p) => p.addEventListener('click', () => selectProbe(p)));
-    selectTest('mm');
-  }
-
-  // Error types: wrong answers on (1), by the outcome of (2) and (3).
-  const CATEGORIES = {
-    'P0R0': 'pr', 'P0R1': 'p', 'P1R0': 'r', 'P1R1': 'mm',
-  };
-  function initErrors() {
-    const root = need(document, '[data-role=errors]');
-    const toggles = [...root.querySelectorAll('[data-outcome]')];
+    const probeAnswer = need(root, '[data-role=probe-answer]');
     const cells = [...root.querySelectorAll('[data-category]')];
     const results = [...root.querySelectorAll('[data-result]')];
-    if (toggles.length !== 3 || cells.length !== 4 || results.length !== 5) throw new Error('error-type demo is incomplete');
-    const state = { perc: true, reas: true, mm: false };
+    if (lanes.length !== 3 || probes.length === 0 || cells.length !== 4 || results.length !== 5) {
+      throw new Error('decomposition demo is incomplete');
+    }
+    // Fig. 2's case: perception and reasoning succeed in isolation, the multimodal test fails.
+    const pass = { mm: false, perc: true, reas: true };
+    let lane = 'mm';
+    let probe = probes[0];
+
     function render() {
-      toggles.forEach((b) => {
-        const pass = state[b.dataset.outcome];
-        const mark = need(b, '.state');
-        mark.textContent = pass ? '✓ correct' : '✗ wrong';
-        mark.classList.toggle('pass', pass);
-        mark.classList.toggle('fail', !pass);
-        b.setAttribute('aria-pressed', String(pass));
+      lanes.forEach((l) => {
+        const id = l.dataset.lane;
+        l.classList.toggle('active', id === lane);
+        l.setAttribute('aria-pressed', String(id === lane));
+        l.querySelectorAll('[data-pass]').forEach((b) => {
+          const on = (b.dataset.pass === '1') === pass[id];
+          b.classList.toggle('active', on);
+          b.setAttribute('aria-pressed', String(on));
+        });
       });
-      const cat = state.mm ? 'correct' : CATEGORIES[`P${state.perc ? 1 : 0}R${state.reas ? 1 : 0}`];
+      views.forEach((v) => { v.hidden = !v.dataset.laneView.split(' ').includes(lane); });
+      probes.forEach((p) => p.classList.toggle('active', p === probe));
+      probeAnswer.textContent = probe.dataset.answer;
+      highlight(svg, lane === 'perc' ? probe.dataset.probe : null);
+      const cat = pass.mm ? 'correct' : CATEGORIES[`P${pass.perc ? 1 : 0}R${pass.reas ? 1 : 0}`];
       cells.forEach((c) => c.classList.toggle('active', c.dataset.category === cat));
       results.forEach((r) => { r.hidden = r.dataset.result !== cat; });
+      root.dataset.lane = lane;
       root.dataset.category = cat;
     }
-    toggles.forEach((b) => b.addEventListener('click', () => { state[b.dataset.outcome] = !state[b.dataset.outcome]; render(); }));
+    lanes.forEach((l) => {
+      l.addEventListener('click', () => { lane = l.dataset.lane; render(); });
+      l.addEventListener('keydown', (e) => {
+        if (e.target === l && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); lane = l.dataset.lane; render(); }
+      });
+      l.querySelectorAll('[data-pass]').forEach((b) => b.addEventListener('click', () => {
+        pass[l.dataset.lane] = b.dataset.pass === '1';
+      }));
+    });
+    probes.forEach((p) => p.addEventListener('click', () => { probe = p; render(); }));
     render();
   }
 
@@ -259,8 +252,7 @@
   }
 
   function init() {
-    initTests();
-    initErrors();
+    initDecomposition();
     initGeneration();
     initModifications();
   }
