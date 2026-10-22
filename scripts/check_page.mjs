@@ -5,7 +5,7 @@
 // match the data, a finding card that doesn't link to its finding, or a carousel
 // that doesn't cycle. Also reports the visible word count.
 import { spawn } from 'node:child_process';
-import { mkdtempSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -13,20 +13,23 @@ const [url, shotDir] = process.argv.slice(2);
 if (!url || !shotDir) { console.error('usage: node scripts/check_page.mjs <url> <screenshot-dir>'); process.exit(2); }
 
 const CHROME = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
-const PORT = 9333;
 const VIEWPORTS = [{ name: 'desktop', width: 1280, height: 900 }, { name: 'phone', width: 390, height: 844 }];
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-async function waitForDebugger() {
+// Chrome is started with --remote-debugging-port=0 and writes the port it picked to
+// DevToolsActivePort in its own profile, so we only ever talk to the instance we launched.
+async function waitForDebugger(profile) {
+  const file = join(profile, 'DevToolsActivePort');
   for (let i = 0; i < 50; i++) {
-    try {
-      const r = await fetch(`http://127.0.0.1:${PORT}/json/version`);
-      if (r.ok) return;
-    } catch { /* not up yet */ }
+    if (existsSync(file)) {
+      const port = Number(readFileSync(file, 'utf8').split('\n')[0]);
+      if (!Number.isInteger(port) || port <= 0) throw new Error(`bad DevToolsActivePort contents in ${file}`);
+      return port;
+    }
     await sleep(200);
   }
-  throw new Error('Chrome debugger did not come up');
+  throw new Error('Chrome debugger did not come up: no ' + file);
 }
 
 function connect(wsUrl) {
@@ -93,7 +96,7 @@ const PAGE_CHECKS = `(async () => {
     b.click();
     await sleep(30);
     const key = b.dataset.metric;
-    const rows = [...document.querySelectorAll('#results-table tbody tr:not(.size-head)')];
+    const rows = [...document.querySelectorAll('#results-table tbody tr')];
     const cells = rows.map((tr) => [...tr.querySelectorAll('td')].filter((td) => !td.classList.contains('model') && !td.classList.contains('variant')).map((td) => td.textContent));
     const expected = data.models.flatMap((m) => m.stages.map((s) => s[key].map((v) => v === null ? '–' : v.toFixed(1))));
     const variants = rows.map((tr) => tr.querySelector('td.variant').textContent);
@@ -101,7 +104,6 @@ const PAGE_CHECKS = `(async () => {
       metric: key,
       cellsOk: JSON.stringify(cells) === JSON.stringify(expected),
       variantsOk: JSON.stringify(variants) === JSON.stringify(data.models.flatMap((m) => m.stages.map((s) => s.variant))),
-      sizeHeads: document.querySelectorAll('#results-table tr.size-head').length,
       overflow: document.documentElement.scrollWidth - window.innerWidth,
     });
   }
@@ -131,8 +133,8 @@ const PAGE_CHECKS = `(async () => {
   return report;
 })()`;
 
-async function checkViewport(vp, failures) {
-  const target = await (await fetch(`http://127.0.0.1:${PORT}/json/new?about:blank`, { method: 'PUT' })).json();
+async function checkViewport(port, vp, failures) {
+  const target = await (await fetch(`http://127.0.0.1:${port}/json/new?about:blank`, { method: 'PUT' })).json();
   const cdp = connect(target.webSocketDebuggerUrl);
   await cdp.ready;
   const problems = [];
@@ -168,7 +170,7 @@ async function checkViewport(vp, failures) {
   if (report.badImgs.length) bad.push('images failed: ' + report.badImgs.join(', '));
   if (!report.abstractOk) bad.push('abstract toggle broken');
   if (report.overflow > 0 || report.overflowAfter > 0) bad.push(`horizontal overflow ${report.overflow}/${report.overflowAfter}px`);
-  for (const t of report.tables) if (!(t.cellsOk && t.variantsOk && t.sizeHeads === 3) || t.overflow > 0) bad.push('table mismatch: ' + JSON.stringify(t));
+  for (const t of report.tables) if (!(t.cellsOk && t.variantsOk) || t.overflow > 0) bad.push('table mismatch: ' + JSON.stringify(t));
   for (const f of report.findings) if (!f.ok) bad.push('finding card mismatch: ' + f.card);
   if (report.findings.length !== 5) bad.push(`expected 5 finding cards, got ${report.findings.length}`);
   if (report.carousel.length !== 7 || !report.carousel.every(Boolean)) bad.push('carousel mismatch: ' + JSON.stringify(report.carousel));
@@ -179,12 +181,12 @@ async function checkViewport(vp, failures) {
 }
 
 const profile = mkdtempSync(join(tmpdir(), 'mathlens-check-'));
-const chrome = spawn(CHROME, ['--headless=new', `--remote-debugging-port=${PORT}`, `--user-data-dir=${profile}`,
+const chrome = spawn(CHROME, ['--headless=new', '--remote-debugging-port=0', `--user-data-dir=${profile}`,
   '--no-first-run', '--no-default-browser-check', '--hide-scrollbars'], { stdio: 'ignore' });
 const failures = [];
 try {
-  await waitForDebugger();
-  for (const vp of VIEWPORTS) await checkViewport(vp, failures);
+  const port = await waitForDebugger(profile);
+  for (const vp of VIEWPORTS) await checkViewport(port, vp, failures);
 } finally {
   chrome.kill();
 }

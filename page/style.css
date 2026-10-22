@@ -134,10 +134,6 @@ strong { font-weight: 600; color: #363636; }
 .leaderboard td.variant { white-space: nowrap; color: var(--text); }
 .leaderboard tbody tr:hover { background: #f5f7fa; }
 .leaderboard tr.group-start td { border-top: 2px solid var(--border); }
-.leaderboard tr.size-head td {
-  text-align: left; font-size: 0.8rem; font-weight: 600; color: var(--text-muted);
-  background: var(--bg-alt); letter-spacing: 0.3px; border-top: 2px solid var(--border);
-}
 .leaderboard td.ne { color: #b5b5b5; }
 .leaderboard .sep { border-left: 1px solid var(--border); }
 .table-caption {

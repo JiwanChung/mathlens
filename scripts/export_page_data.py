@@ -25,8 +25,9 @@ DOWNSTREAM_COLUMNS = ["Text", "Raw", "Base", "Add lines", "Add shapes", "Flip",
 # Header fragments that must appear, in order, in each table's header.
 DOWNSTREAM_HEADER = ["Text", "Raw", "Base", "Add", "Add", "Flip", "Merge", "Rename",
                      "Rotate", "Consistency"]
+# Labels as printed in the paper's header (hyphenated words joined).
 PERCEPTION_COLUMNS = ["Triangle", "Quadrilateral", "Parallel", "Perpendicular", "Collinear",
-                      "Cocircular", "Same length", "Value length", "Same angle", "Value angle"]
+                      "Cocircular", "Same len.", "Val. len.", "Same ∠", "Val. ∠"]
 PERCEPTION_HEADER = ["Tri-", "Quad-", "Parallel", "Perpen-", "Collinear", "Co-",
                      "Same len.", "Val. len.", r"Same $\angle$", r"Val. $\angle$"]
 

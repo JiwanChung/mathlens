@@ -1,6 +1,6 @@
 {
  "source": {
-  "paper_commit": "25fe2f9ddc844892f9f05574ccb6efda3f0a9ee3",
+  "paper_commit": "62a58512bfc7f1e8dc32e73fb7f1a2088756c118",
   "files": {
    "mathlens_resub/Multimodal_Reasoning_Analysis/tabs/full_main.tex": "93b9c9fccee69213e6cd17213dbeb3e478566f71019b7e342fa6590a7f9fa46a",
    "mathlens_resub/Multimodal_Reasoning_Analysis/tabs/full_perception.tex": "ca93e3f4d45237d2ebedd86efe2da09d11c76234d68a23822d5a018bbd04737c",
@@ -28,10 +28,10 @@
   "Perpendicular",
   "Collinear",
   "Cocircular",
-  "Same length",
-  "Value length",
-  "Same angle",
-  "Value angle"
+  "Same len.",
+  "Val. len.",
+  "Same ∠",
+  "Val. ∠"
  ],
  "models": [
   {
