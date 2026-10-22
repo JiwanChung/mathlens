@@ -108,57 +108,129 @@
   <div class="container bit-narrow">
     <h2 class="section-title">MathLens</h2>
     <p class="section-lead">
-      Most multimodal reasoning benchmarks report only aggregate accuracy, obscuring whether errors stem from perception (extracting information from inputs), reasoning (operating on extracted information), or their interaction. MathLens is designed to separately probe these components while preserving realistic problem contexts.
+      Most multimodal reasoning benchmarks report only aggregate accuracy, obscuring whether errors stem from perception, reasoning, or their interaction. MathLens is designed to separately probe these components while preserving realistic problem contexts.
     </p>
 
     <h3 class="subsection-title">Isolating components</h3>
-    <p class="method-text">
-      Each problem is specified by a semantic state, a set of atomic facts such as <span class="nowrap">∠ABC = 50°</span>. Having access to the semantic state allows us to design tests that separately probe perception, reasoning, and multimodal-specific behaviors.
-    </p>
-    <div class="figure-block">
-      <a href="static/figures/mathlens_main2.png" target="_blank" rel="noopener"><img src="static/figures/mathlens_main2.png" alt="The joint Multimodal Reasoning Test decomposed into a Perception Test and a textual Reasoning Test" class="figure-img" loading="lazy" width="2400" height="704"></a>
-      <p class="figure-caption">
-        Based on MathLens annotations, the joint <em>Multimodal Reasoning Test</em> (1) is decomposed into a Perception Test (2) and a textual Reasoning Test (3).
-      </p>
+    <div class="demo" data-role="tests">
+      <div class="demo-tabs" role="tablist" aria-label="Tests">
+        <button type="button" role="tab" class="demo-tab t-mm" data-test="mm">(1) Multimodal Reasoning Test</button>
+        <button type="button" role="tab" class="demo-tab t-perc" data-test="perc">(2) Perception Test</button>
+        <button type="button" role="tab" class="demo-tab t-reas" data-test="reas">(3) Reasoning Test</button>
+      </div>
+      <div class="tests-body">
+        <div class="tests-input">
+          <div data-test-panel="mm perc">
+            <div class="io-label">Diagram</div>
+            <svg class="dg dg-perc" data-role="tests-diagram" role="img" aria-label="Geometry diagram with points A, B, C, D, F, G, I and angles 47°, 112°, 65°"></svg>
+          </div>
+          <div data-test-panel="reas" hidden>
+            <div class="io-label">Text description</div>
+            <div class="io-box io-reas">There are triangle BDF, triangle FIA, line BG, line CI. GBFI are collinear. AFD are collinear. AIC are collinear. ∠BDF=47°. ∠CIF=112°. ∠DFB=65°.</div>
+          </div>
+          <div data-test-panel="mm reas">
+            <div class="io-label">Question</div>
+            <div class="io-box">Find measure of angle IAF.</div>
+          </div>
+          <div data-test-panel="perc" hidden>
+            <div class="io-label">Perception probes</div>
+            <button type="button" class="probe active" data-probe="ang-DFB" data-answer="A. DFB">Which angle has measure 65? A. DFB B. DBF</button>
+            <button type="button" class="probe" data-probe="col-AFD" data-answer="B. AFD">Which is collinear? A. ABD B. AFD</button>
+          </div>
+        </div>
+        <div class="tests-model" aria-hidden="true"><span class="arrow">→</span><span class="mllm">MLLM</span><span class="arrow">→</span></div>
+        <div class="tests-output">
+          <div class="io-label">Answer</div>
+          <div class="answer-box" data-role="tests-answer">47</div>
+        </div>
+      </div>
+      <p class="demo-note" data-test-panel="perc" hidden>The Perception Test evaluates questions answerable directly from the diagram, such as reading an annotated angle.</p>
+      <p class="demo-note" data-test-panel="reas" hidden>The Reasoning Test replaces the diagram with a complete textual description, such that the question can be solved without visual access.</p>
     </div>
-    <p class="method-text">
-      <strong>Perception (2).</strong> Probe questions are derived from the atomic facts listed in the semantic state. These probes check if the model can recover the specific facts that are needed to solve the problem from the given input. Errors here indicate perceptual failures.
-    </p>
-    <p class="method-text">
-      <strong>Reasoning (3).</strong> Given the semantic state, we render a textual description that directly encodes the relevant details. Evaluating on the description trivializes perception, so the task reduces to applying the query correctly. Errors here isolate reasoning competence, free from perceptual confounds.
-    </p>
-    <p class="method-text">
-      <strong>Multimodal-specific (4).</strong> Conditional on success in perception probes and text-only reasoning, any remaining errors on the full task are treated as multimodal-specific residuals. We refer to this category as “integration” interchangeably for brevity.
-    </p>
+
+    <div class="demo" data-role="errors">
+      <div class="err-wrap">
+        <div class="err-toggles">
+          <div class="io-label">Outcome on each test</div>
+          <button type="button" class="err-toggle t-perc" data-outcome="perc"><span>(2) Perception Test</span><span class="state"></span></button>
+          <button type="button" class="err-toggle t-reas" data-outcome="reas"><span>(3) Reasoning Test</span><span class="state"></span></button>
+          <button type="button" class="err-toggle t-mm" data-outcome="mm"><span>(1) Multimodal Reasoning Test</span><span class="state"></span></button>
+        </div>
+        <div class="err-grid-wrap">
+          <div class="io-label">Error type when (1) is wrong</div>
+          <div class="err-grid">
+            <div></div>
+            <div class="err-head">(3) Reasoning ✓</div>
+            <div class="err-head">(3) Reasoning ✗</div>
+            <div class="err-head err-row">(2) Perception ✓</div>
+            <div class="err-cell c-mm" data-category="mm">Multimodal-specific</div>
+            <div class="err-cell c-r" data-category="r">Reasoning</div>
+            <div class="err-head err-row">(2) Perception ✗</div>
+            <div class="err-cell c-p" data-category="p">Perception</div>
+            <div class="err-cell c-pr" data-category="pr">Perception &amp; Reasoning</div>
+          </div>
+        </div>
+      </div>
+      <p class="demo-note" data-result="mm"><strong>Multimodal-specific:</strong> correct perception and text in isolation but failure on the combined multimodal task. Figures label it “Integration” or “Interaction”.</p>
+      <p class="demo-note" data-result="r" hidden><strong>Reasoning:</strong> correct perception probes but failed text-based reasoning.</p>
+      <p class="demo-note" data-result="p" hidden><strong>Perception:</strong> failure on perception probes but correct reasoning from text.</p>
+      <p class="demo-note" data-result="pr" hidden><strong>Perception &amp; Reasoning:</strong> failures on both perception probes and textual reasoning.</p>
+      <p class="demo-note" data-result="correct" hidden><strong>Correct:</strong> counted as Trivial (solvable from text alone) or Rest (all other correct cases).</p>
+    </div>
 
     <h3 class="subsection-title">Data generation</h3>
-    <p class="method-text">
-      Each instance is first specified symbolically, then rendered into its observable forms: diagrams, textual descriptions, and multiple types of questions.
-    </p>
-    <div class="figure-block">
-      <a href="static/figures/fixed_fig3.png" target="_blank" rel="noopener"><img src="static/figures/fixed_fig3.png" alt="Sample data generation process in MathLens" class="figure-img" loading="lazy" width="2400" height="825"></a>
-      <p class="figure-caption">
-        <strong>Sample data generation process in MathLens.</strong>
-      </p>
+    <div class="demo" data-role="gen">
+      <div class="gen-wrap">
+        <div class="gen-state">
+          <div class="io-label">(a) Semantic state</div>
+          <button type="button" class="pred-btn" data-key="col-GBFI">Collinear(GBFI)</button>
+          <button type="button" class="pred-btn" data-key="line-BG">Line(BG)</button>
+          <button type="button" class="pred-btn" data-key="line-CI">Line(CI)</button>
+          <button type="button" class="pred-btn" data-key="col-AFD">Collinear(AFD)</button>
+          <button type="button" class="pred-btn" data-key="tri-BDF">Triangle(BDF)</button>
+          <button type="button" class="pred-btn" data-key="col-AIC">Collinear(AIC)</button>
+          <button type="button" class="pred-btn" data-key="tri-FIA">Triangle(FIA)</button>
+          <button type="button" class="pred-btn active" data-key="ang-BDF">Equal(MeasureOfAngle(BDF), 47)</button>
+          <button type="button" class="pred-btn" data-key="ang-CIF">Equal(MeasureOfAngle(CIF), 112)</button>
+          <button type="button" class="pred-btn" data-key="ang-DFB">Equal(MeasureOfAngle(DFB), 65)</button>
+          <button type="button" class="pred-btn pred-query" data-key="query">Value(MeasureOfAngle(I, A, F))</button>
+        </div>
+        <div class="gen-out">
+          <div class="io-label">(e) Rendered diagram</div>
+          <svg class="dg dg-gen" data-role="gen-diagram" role="img" aria-label="Diagram rendered from the semantic state"></svg>
+          <div class="io-label">(c) Text description</div>
+          <div class="io-box">There are <span data-key="tri-BDF">triangle BDF</span>, <span data-key="tri-FIA">triangle FIA</span>, <span data-key="line-BG">line BG</span>, <span data-key="line-CI">line CI</span>. <span data-key="col-GBFI">GBFI are collinear.</span> <span data-key="col-AFD">AFD are collinear.</span> <span data-key="col-AIC">AIC are collinear.</span> <span data-key="ang-BDF">∠BDF=47°.</span> <span data-key="ang-CIF">∠CIF=112°.</span> <span data-key="ang-DFB">∠DFB=65°.</span></div>
+          <div class="io-label">(d) Perception probes</div>
+          <div class="io-box">
+            <div data-key="ang-BDF">Which angle has measure equal to 47? Choices: A. BDF B. BFD</div>
+            <div data-key="col-GBFI">Which sequence of points is collinear? Choices: A. GDF B. GBF</div>
+            <div data-key="ang-DFB">Which angle has measure 65? A. DFB B. DBF</div>
+            <div data-key="col-AFD">Which is collinear? A. ABD B. AFD</div>
+          </div>
+          <div class="io-label">(b) Question</div>
+          <div class="io-box">
+            <div class="q-row"><span class="q-tag">Uncontrolled</span><span class="q-drop"><span data-key="ang-BDF">∠BDF=47°</span>, <span data-key="ang-CIF">∠CIF=112°</span>, <span data-key="ang-DFB">∠DFB=65°</span>.</span> <span data-key="query">Find the measure of ∠IAF.</span></div>
+            <div class="q-row"><span class="q-tag">MathLens</span><span data-key="query">Find measure of angle IAF.</span></div>
+          </div>
+        </div>
+      </div>
+      <p class="demo-note">From a semantic state representation, we build controlled text descriptions, perception probes, and questions with no overlap with visual content. New diagrams are rendered from the semantic state to avoid visual familiarity effects.</p>
     </div>
-    <p class="method-text">
-      <strong>Data source (a).</strong> We build on FormalGeo-7K, which provides symbolic annotations for geometry problems. Each diagram cue or condition is encoded as a predicate (e.g., <span class="pred">Collinear</span>(AB, BC), <span class="pred">EqualLength</span>(AB, CD)), forming the semantic state.
-    </p>
-    <p class="method-text">
-      <strong>Questions (b).</strong> For a strictly multimodal question, we drop clauses overlapping with the context. Thus the question requires contextual information to solve.
-    </p>
-    <p class="method-text">
-      <strong>Textual descriptions (c).</strong> Each detail is mapped by a template to a clause, yielding a faithful textual rendering of the formal representation without stylistic variation (e.g., <span class="pred">EqualLength</span>(AB, CD) → “Segment AB is equal in length to segment CD”).
-    </p>
-    <p class="method-text">
-      <strong>Perception probes (d).</strong> Each atomic detail is converted to a probe via templating. For example, <span class="pred">Collinear</span>(AB, BC) yields “Which points are collinear? A. ABC B. ABD” with answer A and negative B.
-    </p>
-    <p class="method-text">
-      <strong>Diagram rendering (e).</strong> Each clause is converted into geometric constraints. A numerical solver computes coordinates that satisfy all constraints, which are then rendered into diagrams. We then manually filter outputs to remove artifacts such as occlusions or overlaps.
-    </p>
-    <p class="method-text">
-      <strong>Diagram modifications.</strong> To test visual robustness, we generate diagram variants by altering the semantic state, including adding auxiliary elements, applying flips or rotations, merging instances, and relabeling points, while preserving the ground-truth answer. All variants are manually screened.
-    </p>
+
+    <h3 class="subsection-title">Diagram modifications</h3>
+    <div class="demo" data-role="mods">
+      <div class="seg mods-seg" role="group" aria-label="Diagram modification">
+        <button type="button" data-mod="original">Original</button>
+        <button type="button" data-mod="lines">Add lines</button>
+        <button type="button" data-mod="shapes">Add shapes</button>
+        <button type="button" data-mod="flip">Flip</button>
+        <button type="button" data-mod="rotate">Rotate</button>
+        <button type="button" data-mod="rename">Rename</button>
+      </div>
+      <svg class="dg dg-mods" data-role="mods-diagram" role="img" aria-label="The example diagram under the selected modification"></svg>
+      <div class="mods-qa"><span class="io-box" data-role="mods-question">Find measure of angle IAF.</span><span class="arrow">→</span><span class="answer-box small">47</span></div>
+      <p class="demo-note">To test visual robustness, we generate diagram variants by altering the semantic state, including adding auxiliary elements, applying flips or rotations, merging instances, and relabeling points, while preserving the ground-truth answer.</p>
+    </div>
   </div>
 </section>
 
@@ -325,6 +397,7 @@
 </footer>
 
 <script defer src="page.js"></script>
+<script defer src="mathlens.js"></script>
 <script defer src="results.js"></script>
 </body>
 </html>

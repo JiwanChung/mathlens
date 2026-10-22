@@ -15,6 +15,11 @@ Jiwan Chung, Neel Joshi, Pratyusha Sharma, Youngjae Yu, Vibhav Vineet
   each shown as a claim, one line of numbers, and its figure. Figures are from the paper; the
   abstract is collapsed. The styles follow the deployed `rethinking-state-tracking` page.
 - `page/page.js`: the examples carousel and BibTeX copy.
+- `page/mathlens.js`: the interactive MathLens section, built on the paper's running example
+  (Figs. 2 and 3). It covers the three tests, the error types, the semantic state → artifact
+  mapping, and diagram modifications. The diagram is an SVG traced from Fig. 3(e). Modified
+  diagrams are transforms of that SVG (flip, rotate, relabel, added line or shape), not dataset
+  files.
 - `page/results.js`: the Results table, drawn from `page/static/data/results.json`.
 - `page/static/data/results.json`: the paper's appendix tables (downstream accuracy across diagram
   modifications, perception-probe accuracy by relation type, and the checkpoint behind each row).

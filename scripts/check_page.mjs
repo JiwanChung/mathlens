@@ -2,8 +2,9 @@
 // Usage: node scripts/check_page.mjs <url> <screenshot-dir>
 // Fails (exit 1) on: console errors or uncaught exceptions, HTTP >= 400,
 // images that don't load, horizontal page overflow, a results table that doesn't
-// match the data, a finding card that doesn't link to its finding, or a carousel
-// that doesn't cycle. Also reports the visible word count.
+// match the data, a finding card that doesn't link to its finding, a MathLens demo
+// state that doesn't match the paper's example, or a carousel that doesn't cycle.
+// Also reports the visible word count.
 import { spawn } from 'node:child_process';
 import { existsSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -119,7 +120,59 @@ const PAGE_CHECKS = `(async () => {
   const abs = document.querySelector('details.abstract-details');
   report.abstractOk = !!abs && !abs.open && (abs.querySelector('summary').click(), abs.open) && (abs.querySelector('summary').click(), !abs.open);
 
-  // Carousel: next walks through every slide once and wraps to the first.
+  // MathLens demos.
+  const q = (sel) => document.querySelector(sel);
+  const click = async (sel) => { const e = q(sel); if (!e) throw new Error('missing ' + sel); e.click(); await sleep(10); };
+  const hlIn = (sel) => document.querySelectorAll(sel + ' .hl').length;
+  const demos = [];
+  const answer = () => q('[data-role=tests-answer]').textContent;
+  for (const [test, want] of [['mm', '47'], ['reas', '47'], ['perc', 'A. DFB']]) {
+    await click('[data-test=' + test + ']');
+    demos.push(['tests ' + test, answer() === want && q('[data-role=tests]').dataset.test === test]);
+  }
+  await click('[data-probe=col-AFD]');
+  demos.push(['tests probe', answer() === 'B. AFD' && hlIn('[data-role=tests-diagram]') > 0]);
+  await click('[data-probe=ang-DFB]');
+  await click('[data-test=mm]');
+  // Key: perception pass, reasoning pass (1 = correct).
+  const expectCat = { '00': 'pr', '01': 'p', '10': 'r', '11': 'mm' };
+  const errs = q('[data-role=errors]');
+  const setOutcome = async (name, pass) => {
+    const b = q('[data-outcome=' + name + ']');
+    if ((b.getAttribute('aria-pressed') === 'true') !== pass) { b.click(); await sleep(5); }
+  };
+  for (const p of [0, 1]) for (const r of [0, 1]) for (const m of [0, 1]) {
+    await setOutcome('perc', !!p); await setOutcome('reas', !!r); await setOutcome('mm', !!m);
+    const want = m ? 'correct' : expectCat['' + p + r];
+    const shown = [...errs.querySelectorAll('[data-result]')].filter((e) => !e.hidden).map((e) => e.dataset.result);
+    demos.push(['errors P' + p + 'R' + r + 'M' + m, errs.dataset.category === want && shown.length === 1 && shown[0] === want]);
+  }
+  await setOutcome('perc', true); await setOutcome('reas', true); await setOutcome('mm', false);
+  for (const b of document.querySelectorAll('[data-role=gen] .pred-btn')) {
+    b.click(); await sleep(5);
+    demos.push(['gen ' + b.dataset.key, hlIn('[data-role=gen-diagram]') > 0 && hlIn('[data-role=gen] .gen-out .io-box') > 0]);
+  }
+  await click('[data-role=gen] [data-key=ang-BDF].pred-btn');
+  const ptA = () => { const c = q('[data-role=mods-diagram] circle.pt'); return c.getAttribute('cx') + ',' + c.getAttribute('cy'); };
+  await click('[data-mod=original]');
+  const origA = ptA();
+  for (const b of document.querySelectorAll('[data-mod]')) {
+    b.click(); await sleep(5);
+    const mod = b.dataset.mod;
+    const qtext = q('[data-role=mods-question]').textContent;
+    const labels = [...document.querySelectorAll('[data-role=mods-diagram] .plabel')].map((t) => t.textContent).join('');
+    let ok = q('[data-role=mods] .answer-box').textContent === '47';
+    if (mod === 'rename') ok = ok && qtext === 'Find measure of angle RKP.' && labels === 'KQLPRNM';
+    else ok = ok && qtext === 'Find measure of angle IAF.' && labels === 'AGBFIDC';
+    if (mod === 'flip' || mod === 'rotate') ok = ok && ptA() !== origA;
+    if (mod === 'lines') ok = ok && document.querySelectorAll('[data-role=mods-diagram] line.extra').length === 1;
+    if (mod === 'shapes') ok = ok && document.querySelectorAll('[data-role=mods-diagram] circle.extra').length === 1;
+    demos.push(['mods ' + mod, ok]);
+  }
+  await click('[data-mod=original]');
+  report.demos = demos;
+
+
   const slides = [...document.querySelectorAll('.carousel-slide')];
   const next = document.querySelector('[data-role=carousel] [data-role=next]');
   for (let k = 0; k <= slides.length; k++) {
@@ -174,7 +227,10 @@ async function checkViewport(port, vp, failures) {
   for (const f of report.findings) if (!f.ok) bad.push('finding card mismatch: ' + f.card);
   if (report.findings.length !== 5) bad.push(`expected 5 finding cards, got ${report.findings.length}`);
   if (report.carousel.length !== 7 || !report.carousel.every(Boolean)) bad.push('carousel mismatch: ' + JSON.stringify(report.carousel));
-  console.log(`[${vp.name}] images=${report.images} words=${report.words} tables=${report.tables.length} findings=${report.findings.length} slides=${report.carousel.length - 1} height=${Math.ceil(cssContentSize.height)} screenshot=${shotPath}`);
+  const badDemos = report.demos.filter(([, ok]) => !ok).map(([name]) => name);
+  if (badDemos.length) bad.push('demo mismatch: ' + badDemos.join(', '));
+  if (report.demos.length !== 4 + 1 + 8 + 11 + 6) bad.push(`expected 30 demo checks, got ${report.demos.length}`);
+  console.log(`[${vp.name}] images=${report.images} words=${report.words} tables=${report.tables.length} findings=${report.findings.length} slides=${report.carousel.length - 1} demos=${report.demos.length} height=${Math.ceil(cssContentSize.height)} screenshot=${shotPath}`);
   bad.forEach((b) => console.log(`[${vp.name}] FAIL ${b}`));
   failures.push(...bad);
   cdp.close();
