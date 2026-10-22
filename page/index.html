@@ -108,11 +108,11 @@
   <div class="container bit-narrow">
     <h2 class="section-title">MathLens</h2>
     <p class="section-lead">
-      Benchmarks usually report a single accuracy score, which does not show whether an error stems from perception, reasoning, or their interaction. MathLens is designed to probe these components separately.
+      Existing benchmarks primarily report aggregate accuracy, which obscures whether errors stem from perception, reasoning, or their interaction. Some vary input modalities, but without strict controls they fail to isolate components.
     </p>
 
     <h3 class="subsection-title">Probing perception and reasoning separately</h3>
-    <p class="subsection-lead">Alongside each problem, perception probes ask about facts shown in the diagram, and a textual description replaces the diagram to test reasoning without perception. If a model passes both but still fails the multimodal problem, the error is multimodal-specific.</p>
+    <p class="subsection-lead">Fine-grained probes test perception, and the textual description tests reasoning under trivialized perception. Errors that remain on the multimodal question when both succeed are multimodal-specific.</p>
     <div class="demo" data-role="decomp">
       <div class="decomp-grid">
         <div class="decomp-view">
@@ -179,8 +179,8 @@
       </div>
     </div>
 
-    <h3 class="subsection-title">Generating every test from a semantic state</h3>
-    <p class="subsection-lead">Each problem is specified as a semantic state, a set of atomic facts such as ∠ABC = 50°. The diagram, textual description, question, and perception probes are all generated from it, so they match exactly and errors can be attributed precisely.</p>
+    <h3 class="subsection-title">Four aligned annotations from one semantic state</h3>
+    <p class="subsection-lead">Starting from the symbolic semantic state, we build four aligned annotations: diagrams rendered from geometric constraints, a definitionally equivalent textual description, multimodal questions requiring both modalities, and fine-grained probes targeting recovery of visual details.</p>
     <div class="demo" data-role="gen">
       <div class="gen-wrap">
         <div class="gen-state">
@@ -219,8 +219,8 @@
       <p class="demo-note">The question drops clauses that overlap with the diagram, so it requires the visual context. New diagrams are rendered from the semantic state to avoid visual familiarity effects.</p>
     </div>
 
-    <h3 class="subsection-title">Semantic modifications that preserve the answer</h3>
-    <p class="subsection-lead">To test visual robustness, we alter the semantic state rather than applying pixel-level perturbations, for example by adding auxiliary elements, flipping, rotating, or relabeling points. The ground-truth answer is preserved, so a robust model should give the same prediction across variants.</p>
+    <h3 class="subsection-title">Semantic diagram modifications</h3>
+    <p class="subsection-lead">To test robustness against visual modifications, semantic diagram modifications alter visual form while preserving task correctness.</p>
     <div class="demo" data-role="mods">
       <div class="seg mods-seg" role="group" aria-label="Diagram modification">
         <button type="button" data-mod="original">Original</button>
